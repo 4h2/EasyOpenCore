@@ -758,8 +758,10 @@
                                                     </DockPanel>
                                                 </ToggleButton>
                                                 <StackPanel Margin="46,0,18,16" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
-                                                    <TextBlock Text="{l:Tr trouble.cause}" Style="{StaticResource SectionTitle}" Margin="0,0,0,2"/>
-                                                    <TextBlock Text="{Binding Cause}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                                    <StackPanel Visibility="{Binding HasCause, Converter={StaticResource BoolToVis}}">
+                                                        <TextBlock Text="{l:Tr trouble.cause}" Style="{StaticResource SectionTitle}" Margin="0,0,0,2"/>
+                                                        <TextBlock Text="{Binding Cause}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                                    </StackPanel>
                                                     <TextBlock Text="{l:Tr trouble.fix}" Style="{StaticResource SectionTitle}" Margin="0,0,0,2"/>
                                                     <TextBlock Text="{Binding Fix}" TextWrapping="Wrap" LineHeight="20"/>
                                                     <StackPanel Margin="0,10,0,0" Visibility="{Binding HasCommands, Converter={StaticResource BoolToVis}}">

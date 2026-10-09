@@ -16,9 +16,10 @@ public sealed class TroubleViewModel(TroubleEntry entry, bool relevant) : Observ
     public string Id => entry.Id;
     public string Title => entry.Title;
     public string Cause => entry.Cause;
+    public bool HasCause => Cause.Length > 0;
     public string Fix => entry.Fix;
-    public string Url => entry.FullUrl;
-    public string StageLabel => Loc.T($"trouble.stage.{entry.Stage}");
+    public string Url => entry.Url;
+    public string StageLabel => Loc.T($"trouble.page.{entry.Page}");
     public bool Relevant => relevant;
     public IReadOnlyList<string> Commands => entry.Commands;
     public string CommandsText => string.Join(Environment.NewLine, entry.Commands);
@@ -101,8 +102,8 @@ public sealed class TroubleshootingViewModel : Observable
     {
         Stages.Clear();
         Stages.Add(new CategoryChip(AllStages, Loc.T("trouble.stage.all")));
-        foreach (var s in Troubleshooting.Stages)
-            Stages.Add(new CategoryChip(s, Loc.T($"trouble.stage.{s}")));
+        foreach (var s in Troubleshooting.Pages)
+            Stages.Add(new CategoryChip(s, Loc.T($"trouble.page.{s}")));
         OnPropertyChanged(nameof(SelectedStage));
         Filter();
     }
@@ -112,7 +113,7 @@ public sealed class TroubleshootingViewModel : Observable
         var expanded = Items.Where(i => i.IsExpanded).Select(i => i.Id).ToHashSet();
         Items.Clear();
         var entries = Troubleshooting.Entries
-            .Where(e => _stage == AllStages || e.Stage == _stage)
+            .Where(e => _stage == AllStages || e.Page == _stage)
             .Where(e => Troubleshooting.Matches(e, _query))
             .Select(e => new TroubleViewModel(e, _hardware is not null && e.MatchesHardware(_hardware)))
             .Where(vm => !_onlyRelevant || vm.Relevant)

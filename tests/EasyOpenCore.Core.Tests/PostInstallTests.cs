@@ -71,7 +71,7 @@ public class PostInstallTests : IDisposable
     public async Task Config_tweaks_round_trip()
     {
         var s = EfiSession.Open(_root, _github);
-        foreach (var id in new[] { "scan_policy", "secure_boot_off", "sip_off", "rtc_checksum", "launcher_option", "skip_picker", "release_usb", "hidpi" })
+        foreach (var id in new[] { "scan_policy", "secure_boot_off", "sip_off", "rtc_checksum", "launcher_option", "release_usb", "hidpi" })
         {
             var t = EfiTweaks.Find(id)!;
             Assert.False(t.IsOn(s), id);
@@ -106,12 +106,14 @@ public class PostInstallTests : IDisposable
             Assert.NotEqual($"tweak.{t.Id}.title", t.Title);
             Assert.NotEqual($"tweak.{t.Id}.detail", t.Detail);
         }
-        Assert.True(Troubleshooting.Entries.Count > 50);
+        Assert.True(Troubleshooting.Entries.Count > 90);
+        Assert.Equal(Troubleshooting.Entries.Count, Troubleshooting.Entries.Select(e => e.Id).Distinct().Count());
         foreach (var e in Troubleshooting.Entries)
         {
-            Assert.Contains(e.Stage, Troubleshooting.Stages);
+            Assert.Contains(e.Page, Troubleshooting.Pages);
+            Assert.NotEqual($"ts.{e.Id}.title", e.Title);
             Assert.NotEqual($"ts.{e.Id}.fix", e.Fix);
-            Assert.StartsWith("https://dortania.github.io/", e.FullUrl);
+            Assert.False(string.IsNullOrWhiteSpace(e.Anchor), e.Id);
             Assert.All(e.Fixes, f => Assert.NotNull(EfiTweaks.Find(f.Tweak)));
         }
     }
@@ -121,13 +123,53 @@ public class PostInstallTests : IDisposable
     {
         var hw = new HardwareReport();
         hw.Cpu.Vendor = CpuVendor.Amd;
+        hw.Cpu.Family = 0x17; // Zen
         hw.System.Chassis = ChassisKind.Laptop;
         var b550 = Troubleshooting.Entries.First(e => e.Id == "k_b550");
-        var navi = Troubleshooting.Entries.First(e => e.Id == "k_navi_black");
+        var navi = Troubleshooting.Entries.First(e => e.Id == "k_navi");
+        var icelakeLaptop = Troubleshooting.Entries.First(e => e.Id == "k_cd_clock");
         Assert.True(b550.MatchesHardware(hw));
         Assert.False(navi.MatchesHardware(hw));
+        // Every tag must match: an AMD laptop is not an Intel laptop.
+        Assert.False(icelakeLaptop.MatchesHardware(hw));
+        // The FX section is for families 15h/16h only, not Ryzen.
+        Assert.False(Troubleshooting.Entries.First(e => e.Id == "k_fx_exception").MatchesHardware(hw));
 
         Assert.True(Troubleshooting.Matches(Troubleshooting.Entries.First(e => e.Id == "k_exitbs"), "exitbs"));
-        Assert.True(Troubleshooting.Matches(Troubleshooting.Entries.First(e => e.Id == "p_sleep"), "pmset"));
+        Assert.True(Troubleshooting.Matches(Troubleshooting.Entries.First(e => e.Id == "p_amd_sleep"), "wake reason"));
+    }
+
+    [Fact]
+    public void Troubleshooting_text_is_english_only()
+    {
+        // The guide is in English, so the section texts are not translated: Portuguese falls back to them.
+        var resource = typeof(Loc).Assembly.GetManifestResourceNames().First(n => n.EndsWith("help.pt-BR.json"));
+        using var reader = new StreamReader(typeof(Loc).Assembly.GetManifestResourceStream(resource)!);
+        Assert.DoesNotContain("\"ts.", reader.ReadToEnd());
+    }
+
+    /// <summary>
+    /// Every troubleshooting entry and tweak links to a heading id that exists on the live Dortania page.
+    /// Opt-in (set EOC_NETWORK_TESTS=1) because it downloads the guide.
+    /// </summary>
+    [Fact]
+    public async Task Guide_links_point_at_existing_headings()
+    {
+        if (Environment.GetEnvironmentVariable("EOC_NETWORK_TESTS") != "1")
+            return;
+
+        var urls = Troubleshooting.Entries.Select(e => e.Url).Concat(EfiTweaks.All.Select(t => t.Url)).Distinct().ToList();
+        using var http = new HttpClient();
+        var pages = new Dictionary<string, string>();
+        var missing = new List<string>();
+        foreach (var url in urls)
+        {
+            var parts = url.Split('#', 2);
+            if (!pages.TryGetValue(parts[0], out var html))
+                pages[parts[0]] = html = await http.GetStringAsync(parts[0]);
+            if (parts.Length == 2 && !html.Contains($"id=\"{parts[1]}\"", StringComparison.Ordinal))
+                missing.Add(url);
+        }
+        Assert.Empty(missing);
     }
 }

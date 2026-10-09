@@ -41,13 +41,13 @@ dotnet test
 - [x] AppleALC layout-id matched to the machine model, AMD Vanilla patches with the core count, macserial serials
 - [x] USB mapping: live port discovery through the Windows USB hub IOCTLs, USBToolBox-compatible UTBMap.kext
 - [x] USB installer: copy EFI to a FAT32 drive (optional elevated format), download the macOS recovery from Apple with chunklist signature verification
-- [x] Post-Install tab: 26 tweaks from the Dortania Post-Install guide applied to an existing EFI (verbose/debug clean-up, DEBUG log build swap, OpenCanopy GUI, boot chime, HiDPI, LauncherOption, ScanPolicy, Secure Boot, SIP, extra kexts), with a config backup and `ocvalidate` after every change
-- [x] Troubleshooting tab: the Dortania troubleshooting pages (64 problems), searchable, grouped by boot stage, flagged when specific to the scanned hardware, with one-click fixes that apply the matching tweak
+- [x] Post-Install tab: 24 tweaks from the Dortania Post-Install guide applied to an existing EFI (verbose/debug clean-up, DEBUG log build swap, OpenCanopy GUI, boot chime, HiDPI, LauncherOption, ScanPolicy, Secure Boot, SIP, extra kexts), with a config backup and `ocvalidate` after every change
+- [x] Troubleshooting tab: every section of the five Dortania troubleshooting pages (96 entries, in English like the guide), summarized from the guide and linked to the exact heading, flagged when specific to the scanned hardware, with one-click fixes that apply the matching tweak
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design.
 
 ## Adding a language
 
 Copy `src/EasyOpenCore.Core/Localization/en.json` to `<code>.json` (e.g. `es.json`) and
-`help.en.json` to `help.<code>.json` (troubleshooting and post-install texts), translate the values
+`help.en.json` to `help.<code>.json` (post-install texts; `troubleshooting.en.json` stays English, like the guide), translate the values
 and register the language in `Loc.Languages`. Missing keys fall back to English.

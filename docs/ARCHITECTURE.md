@@ -68,8 +68,9 @@ then the newest.
 ### 3. Localization (`Core/Localization`)
 
 `Loc` loads `en.json` (primary, fallback) and other languages from embedded JSON, merged with
-topic files named `<topic>.<language>.json` (`help.*.json` holds the troubleshooting and
-post-install texts). The UI binds
+topic files named `<topic>.<language>.json` (`help.*.json` holds the post-install texts;
+`troubleshooting.en.json` has no translations on purpose, so it stays as close to the English guide
+as possible). The UI binds
 through `{l:Tr key}` and refreshes live on language changes; data-file notes use `@key` references.
 The chosen language is saved to `%AppData%\EasyOpenCore\settings.json`.
 
@@ -83,8 +84,12 @@ The chosen language is saved to `%AppData%\EasyOpenCore\settings.json`.
   reverts it (boot-args keep `NVRAM → Delete` in sync; drivers come from the same OpenCore build;
   OpenCanopy resources from OcBinaryData; kexts are added through `KextResolver` and placed with
   the OC Snapshot ordering while existing `Kernel → Add` entries are kept as they are).
-- `Troubleshooting` loads `Data/troubleshooting.json`: stage, hardware tags, guide anchor, terminal
-  commands and the tweaks that fix each problem. Texts are `ts.<id>.title/cause/fix`.
+- `Troubleshooting` loads `Data/troubleshooting.json`: one entry per section of the five
+  "extended" troubleshooting pages, with the page, the section's real heading id, hardware tags
+  (all must match), the commands quoted by the guide and the tweaks that apply its fix. Texts are
+  `ts.<id>.title` (the heading), `.cause` (only when the guide states one) and `.fix`, summarized
+  from the section. Every tweak links to the guide too; `Guide_links_point_at_existing_headings`
+  (with `EOC_NETWORK_TESTS=1`) checks that every link's heading exists on the live page.
 
 ## Next steps
 

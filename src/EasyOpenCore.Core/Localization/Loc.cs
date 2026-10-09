@@ -61,6 +61,9 @@ public sealed class Loc : INotifyPropertyChanged
         return args.Length == 0 ? text : string.Format(Instance.Culture, text, args);
     }
 
+    /// <summary>True when the key exists in the current language or the English fallback.</summary>
+    public static bool Has(string key) => Instance._current.ContainsKey(key) || Instance._fallback.ContainsKey(key);
+
     private string Get(string key)
     {
         if (key.StartsWith('@'))

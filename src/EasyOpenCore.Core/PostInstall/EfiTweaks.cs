@@ -32,8 +32,10 @@ public sealed class EfiTweak
 
 public static class EfiTweaks
 {
+    // Every link points at a heading id that exists on the page (checked by the network test).
     private const string Guide = "https://dortania.github.io/OpenCore-Post-Install/";
-    private const string Install = "https://dortania.github.io/OpenCore-Install-Guide/troubleshooting/extended/";
+    private const string Install = "https://dortania.github.io/OpenCore-Install-Guide/";
+    private const string Extended = Install + "troubleshooting/extended/";
     /// <summary>0x10F0103: file system + device lock, APFS/HFS on SATA, SAS, SCSI, NVMe and PCI devices.</summary>
     private const long ScanPolicySecure = 17760515;
 
@@ -44,10 +46,10 @@ public static class EfiTweaks
     private static List<EfiTweak> Create() =>
     [
         // ---- Cleanup: "Fixing Resolution and Verbose" ----
-        BootArg("verbose", "-v", TweakGroup.Cleanup, Guide + "cosmetic/verbose.html"),
+        BootArg("verbose", "-v", TweakGroup.Cleanup, Guide + "cosmetic/verbose.html#macos-decluttering"),
         new()
         {
-            Id = "debug_args", Group = TweakGroup.Cleanup, Url = Install + "../debug.html",
+            Id = "debug_args", Group = TweakGroup.Cleanup, Url = Install + "config.plist/coffee-lake.html#add-4",
             IsOn = s => s.HasBootArg("keepsyms=1") && s.HasBootArg("debug=0x100"),
             SetAsync = (s, on, _) =>
             {
@@ -58,7 +60,7 @@ public static class EfiTweaks
         },
         new()
         {
-            Id = "apple_debug", Group = TweakGroup.Cleanup, Url = Guide + "cosmetic/verbose.html",
+            Id = "apple_debug", Group = TweakGroup.Cleanup, Url = Guide + "cosmetic/verbose.html#macos-decluttering",
             IsOn = s => Bool(s.Config, "Misc", "Debug", "AppleDebug"),
             SetAsync = (s, on, _) =>
             {
@@ -70,25 +72,28 @@ public static class EfiTweaks
         },
         new()
         {
-            Id = "debug_log", Group = TweakGroup.Cleanup, Url = Install + "../debug.html", Downloads = true,
+            Id = "debug_log", Group = TweakGroup.Cleanup, Url = Install + "troubleshooting/debug.html#file-swaps", Downloads = true,
             IsOn = s => (Int(s.Config, "Misc", "Debug", "Target") & 0x40) != 0,
             SetAsync = async (s, on, ct) =>
             {
+                // "OpenCore Debugging": DEBUG files + Target 67; "Disabling all logging": RELEASE files + Target 0.
                 await s.SwapFlavourAsync(on, ct);
                 var debug = s.Config.Dict("Misc").Dict("Debug");
-                debug["Target"] = P.Int(on ? 67 : 3);
-                debug["DisplayLevel"] = P.Int(on ? 2147483714 : 2147483650);
+                debug["Target"] = P.Int(on ? 67 : 0);
                 debug["AppleDebug"] = P.Bool(on);
                 debug["ApplePanic"] = P.Bool(on);
                 if (on)
+                {
                     debug["DisableWatchDog"] = P.Bool(true);
+                    debug["DisplayLevel"] = P.Int(2147483714);
+                }
             },
         },
 
         // ---- Appearance: "Add GUI and Boot-chime" ----
         new()
         {
-            Id = "gui", Group = TweakGroup.Appearance, Url = Guide + "cosmetic/gui.html", Downloads = true,
+            Id = "gui", Group = TweakGroup.Appearance, Url = Guide + "cosmetic/gui.html#setting-up-opencore-s-gui", Downloads = true,
             IsOn = s => s.Config.Dict("Misc").Dict("Boot").GetString("PickerMode") == "External" && s.HasDriver("OpenCanopy.efi"),
             SetAsync = async (s, on, ct) =>
             {
@@ -136,6 +141,9 @@ public static class EfiTweaks
                     audio["AudioCodec"] = P.Int(0);
                     audio["AudioOutMask"] = P.Int(-1);
                     audio["PlayChime"] = P.Str("Enabled");
+                    audio["MaximumGain"] = P.Int(-15);
+                    audio["MinimumAssistGain"] = P.Int(-30);
+                    audio["MinimumAudibleGain"] = P.Int(-55);
                     s.AppleNvram["SystemAudioVolume"] = P.Data([0x46]);
                 }
                 else
@@ -153,7 +161,7 @@ public static class EfiTweaks
         },
         new()
         {
-            Id = "hidpi", Group = TweakGroup.Appearance, Url = Guide + "cosmetic/verbose.html",
+            Id = "hidpi", Group = TweakGroup.Appearance, Url = Guide + "cosmetic/verbose.html#macos-decluttering",
             IsOn = s => Int(s.Config, "UEFI", "Output", "UIScale") == 2,
             SetAsync = (s, on, _) =>
             {
@@ -164,12 +172,12 @@ public static class EfiTweaks
                 return Task.CompletedTask;
             },
         },
-        Flag("hide_aux", TweakGroup.Appearance, Guide + "cosmetic/gui.html", "Misc", "Boot", "HideAuxiliary"),
+        Flag("hide_aux", TweakGroup.Appearance, Install + "config.plist/coffee-lake.html#boot", "Misc", "Boot", "HideAuxiliary"),
 
         // ---- Boot / multiboot ----
         new()
         {
-            Id = "launcher_option", Group = TweakGroup.Boot, Url = Guide + "multiboot/bootstrap.html",
+            Id = "launcher_option", Group = TweakGroup.Boot, Url = Guide + "multiboot/bootstrap.html#prerequisites",
             IsOn = s => (s.Config.Dict("Misc").Dict("Boot").GetString("LauncherOption") ?? "Disabled") != "Disabled",
             SetAsync = (s, on, _) =>
             {
@@ -181,17 +189,7 @@ public static class EfiTweaks
                 return Task.CompletedTask;
             },
         },
-        new()
-        {
-            Id = "skip_picker", Group = TweakGroup.Boot, Url = Guide + "multiboot/bootstrap.html",
-            IsOn = s => !Bool(s.Config, "Misc", "Boot", "ShowPicker"),
-            SetAsync = (s, on, _) =>
-            {
-                s.Config.Dict("Misc").Dict("Boot")["ShowPicker"] = P.Bool(!on);
-                return Task.CompletedTask;
-            },
-        },
-        Flag("advise_features", TweakGroup.Boot, Install + "post-issues.html#you-can-t-change-the-startup-disk-to-the-selected-disk-error",
+        Flag("advise_features", TweakGroup.Boot, Extended + "post-issues.html#you-can-t-change-the-startup-disk-to-the-selected-disk-error",
             "PlatformInfo", "Generic", "AdviseFeatures"),
 
         // ---- Security ----
@@ -207,7 +205,7 @@ public static class EfiTweaks
         },
         new()
         {
-            Id = "secure_boot_off", Group = TweakGroup.Security, Url = Guide + "universal/security/applesecureboot.html",
+            Id = "secure_boot_off", Group = TweakGroup.Security, Url = Guide + "universal/security/applesecureboot.html#securebootmodel",
             IsOn = s => s.Config.Dict("Misc").Dict("Security").GetString("SecureBootModel") == "Disabled",
             SetAsync = (s, on, _) =>
             {
@@ -217,7 +215,7 @@ public static class EfiTweaks
         },
         new()
         {
-            Id = "sip_off", Group = TweakGroup.Security, Url = Install + "post-issues.html#disabling-sip",
+            Id = "sip_off", Group = TweakGroup.Security, Url = Extended + "post-issues.html#disabling-sip",
             IsOn = s => s.AppleNvram.TryGet("csr-active-config") is PData d && d.Value.Any(b => b != 0),
             SetAsync = (s, on, _) =>
             {
@@ -229,21 +227,20 @@ public static class EfiTweaks
 
         // ---- Fixes from the troubleshooting pages ----
         Flag("rtc_checksum", TweakGroup.Fixes, Guide + "misc/rtc.html", "Kernel", "Quirks", "DisableRtcChecksum"),
-        Flag("jumpstart_hotplug", TweakGroup.Fixes, Install + "kernel-issues.html", "UEFI", "APFS", "JumpstartHotPlug"),
-        Flag("release_usb", TweakGroup.Fixes, Install + "kernel-issues.html", "UEFI", "Quirks", "ReleaseUsbOwnership"),
-        BootArg("npci", "npci=0x2000", TweakGroup.Fixes, Install + "kernel-issues.html"),
-        BootArg("igfxonln", "igfxonln=1", TweakGroup.Fixes, Install + "post-issues.html#coffee-lake-systems-failing-to-wake",
-            hw => hw.Gpus.Any(IsIntelIgpu)),
-        BootArg("igfxblr", "-igfxblr", TweakGroup.Fixes, Install + "userspace-issues.html",
-            hw => hw.System.Chassis == ChassisKind.Laptop && hw.Gpus.Any(IsIntelIgpu)),
-        BootArg("agdpmod", "agdpmod=pikera", TweakGroup.Fixes, Install + "kernel-issues.html", hw => hw.Gpus.Any(IsAmdDgpu)),
-        BootArg("unfairgva", "unfairgva=1", TweakGroup.Fixes, Guide + "universal/drm.html", hw => hw.Gpus.Any(IsAmdDgpu)),
+        Flag("jumpstart_hotplug", TweakGroup.Fixes, Extended + "kernel-issues.html#stuck-on-eb-ld-ofs-err-0xe-when-booting-preboot-volume",
+            "UEFI", "APFS", "JumpstartHotPlug"),
+        Flag("release_usb", TweakGroup.Fixes, Extended + "kernel-issues.html#usb-issues", "UEFI", "Quirks", "ReleaseUsbOwnership"),
+        BootArg("npci", "npci=0x2000", TweakGroup.Fixes, Extended + "kernel-issues.html#stuck-on-rtc-pci-configuration-begins-previous-shutdown-hpet-hid-legacy"),
+        BootArg("igfxonln", "igfxonln=1", TweakGroup.Fixes, Extended + "post-issues.html#coffee-lake-systems-failing-to-wake"),
+        BootArg("igfxblr", "-igfxblr", TweakGroup.Fixes, Extended + "userspace-issues.html#black-screen-after-ioconsoleusers-gioscreenlock-on-laptops-and-aios"),
+        BootArg("agdpmod", "agdpmod=pikera", TweakGroup.Fixes, Extended + "kernel-issues.html#black-screen-after-ioconsoleusers-gioscreenlock-on-navi"),
 
         // ---- Extra kexts ----
-        Kext("CpuTscSync", Install + "kernel-issues.html", hw => hw.Cpu.Vendor == CpuVendor.Intel),
-        Kext("NVMeFix", Guide + "universal/sleep.html", hw => hw.Storage.Any(d => d.Bus.Contains("NVMe", StringComparison.OrdinalIgnoreCase))),
+        Kext("CpuTscSync", Extended + "kernel-issues.html#macos-frozen-right-before-login", _ => false),
+        // "Fixing Sleep" asks for NVMeFix on NVMe drives; the battery page uses ECEnabler instead of ACPI patches.
+        Kext("NVMeFix", Guide + "universal/sleep.html#fixing-nvme", hw => hw.Storage.Any(d => d.Bus.Contains("NVMe", StringComparison.OrdinalIgnoreCase))),
         Kext("ECEnabler", Guide + "laptop-specific/battery.html", hw => hw.System.Chassis == ChassisKind.Laptop),
-        Kext("RestrictEvents", Guide + "universal/memory.html", _ => false),
+        Kext("RestrictEvents", Extended + "post-issues.html#memory-modules-misconfigured-on-macpro7-1", _ => false),
     ];
 
     // ---- factories --------------------------------------------------------------------
@@ -344,10 +341,6 @@ public static class EfiTweaks
         add.Clear();
         add.AddRange(rebuilt);
     }
-
-    private static bool IsIntelIgpu(GpuInfo g) => g.Kind == GpuKind.Integrated && g.VendorId == "8086";
-
-    private static bool IsAmdDgpu(GpuInfo g) => g.Kind == GpuKind.Discrete && g.VendorId == "1002";
 
     private static bool Bool(PDict config, string section, string dict, string key) =>
         (config.TryGet(section) as PDict)?.TryGet(dict) is PDict d && d.TryGet(key) is PBool { Value: true };

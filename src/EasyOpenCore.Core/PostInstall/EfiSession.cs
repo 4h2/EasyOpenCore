@@ -180,7 +180,7 @@ public sealed class EfiSession
         return Directory.GetDirectories(dir, "Resources", SearchOption.AllDirectories).First();
     }
 
-    /// <summary>Switches BOOTx64.efi, OpenCore.efi, OpenRuntime.efi (and OpenCanopy.efi) to the DEBUG or RELEASE build.</summary>
+    /// <summary>Swaps the files listed in "OpenCore Debugging → File Swaps" (BOOTx64.efi, OpenCore.efi, OpenRuntime.efi, and OpenCanopy.efi if used) to the DEBUG or RELEASE build.</summary>
     public async Task SwapFlavourAsync(bool debug, CancellationToken ct)
     {
         var pkg = await PackageAsync(ct);
@@ -193,7 +193,7 @@ public sealed class EfiSession
         }
         Swap(Path.Combine("BOOT", "BOOTx64.efi"));
         Swap(Path.Combine("OC", "OpenCore.efi"));
-        foreach (var driver in new[] { "OpenRuntime.efi", "OpenCanopy.efi", "AudioDxe.efi", "ResetNvramEntry.efi" })
+        foreach (var driver in new[] { "OpenRuntime.efi", "OpenCanopy.efi" })
             Swap(Path.Combine("OC", "Drivers", driver));
         _package = pkg with { EfiIsDebug = debug };
     }
