@@ -37,7 +37,7 @@ public sealed class EfiBuilder(GitHubClient github)
     private const string KextGuideUrl = "https://dortania.github.io/OpenCore-Install-Guide/ktext.html";
 
     public async Task<EfiBuildResult> BuildAsync(HardwareReport hw, CompatibilityReport compat, string macosVersion,
-        string outputDirectory, IProgress<string>? progress = null, CancellationToken ct = default)
+        string outputDirectory, IProgress<string>? progress = null, CancellationToken ct = default, Usb.UsbMap? usbMap = null)
     {
         var db = CompatDatabase.Instance;
         var plan = EfiPlanner.Plan(hw, compat, macosVersion);
@@ -82,6 +82,13 @@ public sealed class EfiBuilder(GitHubClient github)
         var topLevel = new List<string>();
         foreach (var k in plan.Kexts)
         {
+            if (k.Name == "UTBMap" && usbMap?.HasSelection == true)
+            {
+                usbMap.WriteKext(Path.Combine(oc, "Kexts"));
+                topLevel.Add("UTBMap.kext");
+                result.Kexts.Add(new("UTBMap", "", Loc.T("build.kext.usbmap")));
+                continue;
+            }
             if (k.Name == "UTBMap")
             {
                 result.MissingKexts.Add(new(k.Name, Loc.T("build.kext.utbmap"), "https://github.com/USBToolBox/tool/releases"));

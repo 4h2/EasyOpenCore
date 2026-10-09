@@ -4,6 +4,8 @@ using EasyOpenCore.Core.Compatibility;
 using EasyOpenCore.Core.Efi;
 using EasyOpenCore.Core.Hardware;
 using EasyOpenCore.Core.Localization;
+using EasyOpenCore.Core.Recovery;
+using EasyOpenCore.Core.Usb;
 
 // Usage:
 //   eoc                       -> summary on the console
@@ -12,6 +14,11 @@ using EasyOpenCore.Core.Localization;
 //   eoc --macos 15            -> EFI plan for a specific macOS version (default: recommended)
 //   eoc --lang pt-BR          -> output language (default: en)
 //   eoc --build folder        -> download everything and build the EFI for --macos (or the recommended version)
+//       --recovery folder     -> also download and verify the macOS recovery image
+//       --usb X:\             -> copy EFI (+ recovery) to a FAT32 drive (--overwrite replaces an existing EFI)
+//   eoc --list-usb            -> list USB disks
+//   eoc --usb-ports           -> show USB ports and record connected ones in the saved USB map
+//       --use-usb-map         -> (with --build) generate UTBMap.kext from the saved USB map
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 string? Arg(string name)
@@ -126,7 +133,7 @@ if (Arg("--build") is { } buildDir && target is not null)
 {
     using var github = new GitHubClient();
     var result = await new EfiBuilder(github).BuildAsync(report, compat, target, Path.GetFullPath(buildDir),
-        new Progress<string>(s => Console.Error.WriteLine($"[build] {s}")));
+        new Progress<string>(s => Console.Error.WriteLine($"[build] {s}")), usbMap: args.Contains("--use-usb-map") ? UsbMap.Load() : null);
 
     Console.WriteLine($"\n== EFI built in {result.OutputDirectory} (OpenCore {result.OpenCoreVersion}) ==");
     foreach (var k in result.Kexts) Console.WriteLine($"  {k.Name,-28} {k.Version,-10} {k.Source}");
@@ -135,4 +142,49 @@ if (Arg("--build") is { } buildDir && target is not null)
     foreach (var m in result.ManualSsdts) Console.WriteLine($"  Manual: {m.Name} — {Loc.T(m.ReasonKey)}");
     if (result.Audio is { } a) Console.WriteLine($"Audio: layout-id {a.LayoutId} at {a.ControllerPath}");
     Console.WriteLine($"ocvalidate: {(result.ValidationPassed ? "PASSED" : "FAILED")}\n{result.ValidationOutput}");
+
+    var recoveryFiles = new List<string>();
+    if (Arg("--recovery") is { } recoveryDir)
+    {
+        var macrecovery = Directory.EnumerateDirectories(github.CacheRoot, "macrecovery", SearchOption.AllDirectories).First();
+        using var downloader = new RecoveryDownloader(macrecovery);
+        var version = compat.Versions.First(v => v.Id == target);
+        var board = downloader.BoardFor(version.Name) ?? throw new InvalidOperationException($"No recovery board for {version.Name}");
+        var info = await downloader.GetImageInfoAsync(board);
+        Console.WriteLine($"Recovery: {info.Product}");
+        long lastMb = -1;
+        var (dmg, chunklist) = await downloader.DownloadAsync(info, Path.GetFullPath(recoveryDir), new Progress<DownloadProgress>(p =>
+        {
+            if (p.Received / 50_000_000 != lastMb) { lastMb = p.Received / 50_000_000; Console.Error.WriteLine($"[recovery] {p.File} {p.Received / 1_000_000} / {p.Total / 1_000_000} MB"); }
+        }));
+        Console.WriteLine($"Recovery verified: {dmg}");
+        recoveryFiles.AddRange([dmg, chunklist]);
+    }
+
+    if (Arg("--usb") is { } usbRoot)
+    {
+        await UsbDriveWriter.CopyAsync(Path.Combine(result.OutputDirectory, "EFI"), usbRoot, recoveryFiles, overwrite: args.Contains("--overwrite"));
+        Console.WriteLine($"Copied EFI{(recoveryFiles.Count > 0 ? " and recovery" : "")} to {usbRoot}");
+    }
+}
+
+if (args.Contains("--usb-ports"))
+{
+    var live = UsbTopology.Read(report.AllDevices);
+    var usbMap = UsbMap.Load();
+    usbMap.Update(live);
+    usbMap.Save();
+    Console.WriteLine($"USB map saved to {UsbMap.DefaultPath}");
+    foreach (var c in live)
+    {
+        Console.WriteLine($"\n{c.Name} [{c.VendorId}:{c.DeviceId}] xHCI={c.IsXhci} ACPI={c.AcpiPath} BDF={c.Bdf}");
+        foreach (var p in c.Ports)
+            Console.WriteLine($"  Port {p.Index,2} {p.Protocol,-7} {(p.TypeC ? "Type-C " : "")}{(p.UserConnectable ? "" : "internal ")}companion={p.CompanionPort} {p.DeviceName}");
+    }
+}
+
+if (args.Contains("--list-usb"))
+{
+    foreach (var d in UsbDriveWriter.ListUsbDisks())
+        Console.WriteLine($"Disk {d.Number}: {d.Display}");
 }
