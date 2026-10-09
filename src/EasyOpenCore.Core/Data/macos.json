@@ -1,0 +1,11 @@
+[
+  { "id": "10.13", "name": "High Sierra", "darwin": 17 },
+  { "id": "10.14", "name": "Mojave", "darwin": 18 },
+  { "id": "10.15", "name": "Catalina", "darwin": 19 },
+  { "id": "11", "name": "Big Sur", "darwin": 20 },
+  { "id": "12", "name": "Monterey", "darwin": 21 },
+  { "id": "13", "name": "Ventura", "darwin": 22 },
+  { "id": "14", "name": "Sonoma", "darwin": 23 },
+  { "id": "15", "name": "Sequoia", "darwin": 24 },
+  { "id": "26", "name": "Tahoe", "darwin": 25, "note": "@note.tahoe_last_intel" }
+]

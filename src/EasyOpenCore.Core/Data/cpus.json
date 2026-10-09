@@ -1,0 +1,193 @@
+[
+  {
+    "id": "intel-penryn", "vendor": "Intel", "codenames": ["Penryn"],
+    "ranges": [ { "from": "10.13", "to": "10.13", "level": "supported" } ],
+    "smbios": { "desktop": ["iMac10,1"], "laptop": ["MacBookPro8,1"] },
+    "ssdts": { "desktop": ["SSDT-EC"], "laptop": ["SSDT-EC", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-nehalem", "vendor": "Intel", "codenames": ["Nehalem", "Westmere"],
+    "ranges": [
+      { "from": "10.13", "to": "12", "level": "supported" },
+      { "from": "13", "to": "15", "level": "patched", "note": "@note.cryptexfixup" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.unverified" }
+    ],
+    "smbios": { "desktop": ["MacPro6,1", "MacPro7,1"], "laptop": ["MacBookPro8,1", "MacBookPro11,1", "MacBookPro14,1", "MacBookPro15,2"] },
+    "ssdts": { "desktop": ["SSDT-EC"], "laptop": ["SSDT-EC", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-sandy", "vendor": "Intel", "codenames": ["Sandy Bridge"],
+    "ranges": [
+      { "from": "10.13", "to": "12", "level": "supported" },
+      { "from": "13", "to": "15", "level": "patched", "note": "@note.cryptexfixup" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.unverified" }
+    ],
+    "smbios": { "desktop": ["iMac12,2", "MacPro6,1", "MacPro7,1"], "laptop": ["MacBookPro8,1", "MacBookPro11,1", "MacBookPro14,1", "MacBookPro15,2"] },
+    "ssdts": { "desktop": ["SSDT-CPU-PM", "SSDT-EC"], "laptop": ["SSDT-CPU-PM", "SSDT-EC", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-ivy", "vendor": "Intel", "codenames": ["Ivy Bridge"],
+    "ranges": [
+      { "from": "10.13", "to": "12", "level": "supported" },
+      { "from": "13", "to": "15", "level": "patched", "note": "@note.cryptexfixup" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.unverified" }
+    ],
+    "smbios": { "desktop": ["iMac13,2", "MacPro6,1", "MacPro7,1"], "laptop": ["MacBookPro9,2", "MacBookPro11,1", "MacBookPro14,1", "MacBookPro15,2"] },
+    "ssdts": { "desktop": ["SSDT-CPU-PM", "SSDT-EC"], "laptop": ["SSDT-CPU-PM", "SSDT-EC", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-hedt-legacy", "vendor": "Intel", "codenames": ["Sandy Bridge-E", "Ivy Bridge-E"],
+    "ranges": [
+      { "from": "10.13", "to": "12", "level": "supported" },
+      { "from": "13", "to": "15", "level": "patched", "note": "@note.cryptexfixup" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.unverified" }
+    ],
+    "smbios": { "desktop": ["MacPro6,1", "MacPro7,1"] },
+    "ssdts": { "desktop": ["SSDT-EC", "SSDT-UNC"] }
+  },
+  {
+    "id": "intel-haswell", "vendor": "Intel", "codenames": ["Haswell"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "smbios": {
+      "desktop": ["iMac14,4", "iMac17,1", "iMac18,1", "iMac19,1", "iMac20,1"],
+      "desktopDgpu": ["iMac15,1", "iMac17,1", "iMac18,3", "iMac19,1", "iMac20,1"],
+      "laptop": ["MacBookPro11,1", "MacBookPro14,1", "MacBookPro15,2", "MacBookPro16,2"],
+      "laptopH": ["MacBookPro11,4", "MacBookPro14,3", "MacBookPro15,1", "MacBookPro16,1"]
+    },
+    "ssdts": { "desktop": ["SSDT-PLUG", "SSDT-EC"], "laptop": ["SSDT-PLUG", "SSDT-EC", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-broadwell", "vendor": "Intel", "codenames": ["Broadwell"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "smbios": {
+      "desktop": ["iMac16,2", "iMac18,1", "iMac19,1", "iMac20,1"],
+      "laptop": ["MacBookPro12,1", "MacBookPro14,1", "MacBookPro15,2", "MacBookPro16,2"]
+    },
+    "ssdts": { "desktop": ["SSDT-PLUG", "SSDT-EC"], "laptop": ["SSDT-PLUG", "SSDT-EC", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-hedt", "vendor": "Intel", "codenames": ["Haswell-E", "Broadwell-E", "Skylake-X / Cascade Lake"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported", "note": "@note.hedt" } ],
+    "smbios": { "desktop": ["iMacPro1,1", "MacPro7,1"] },
+    "ssdts": { "desktop": ["SSDT-PLUG", "SSDT-EC-USBX", "SSDT-RTC0-RANGE", "SSDT-UNC"] }
+  },
+  {
+    "id": "intel-skylake", "vendor": "Intel", "codenames": ["Skylake"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "smbios": {
+      "desktop": ["iMac17,1", "iMac18,1", "iMac19,1", "iMac20,1"],
+      "laptop": ["MacBookPro13,1", "MacBookPro14,1", "MacBookPro15,2", "MacBookPro16,2"],
+      "laptopH": ["MacBookPro13,3", "MacBookPro14,3", "MacBookPro15,1", "MacBookPro16,1"]
+    },
+    "ssdts": { "desktop": ["SSDT-PLUG", "SSDT-EC-USBX"], "laptop": ["SSDT-PLUG", "SSDT-EC-USBX", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-kabylake", "vendor": "Intel", "codenames": ["Kaby Lake"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "smbios": {
+      "desktop": ["iMac18,1", "iMac19,1", "iMac20,1"],
+      "desktopDgpu": ["iMac18,3", "iMac19,1", "iMac20,1"],
+      "laptop": ["MacBookPro14,1", "MacBookPro15,2", "MacBookPro16,2"],
+      "laptopH": ["MacBookPro14,3", "MacBookPro15,1", "MacBookPro16,1"]
+    },
+    "ssdts": { "desktop": ["SSDT-PLUG", "SSDT-EC-USBX"], "laptop": ["SSDT-PLUG", "SSDT-EC-USBX", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-coffeelake", "vendor": "Intel", "codenames": ["Coffee Lake", "Kaby Lake-R / Coffee Lake", "Whiskey Lake"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "smbios": {
+      "desktop": ["iMac19,1", "iMac20,1"],
+      "laptop": ["MacBookPro15,2", "MacBookPro16,2"],
+      "laptopH": ["MacBookPro15,1", "MacBookPro16,1"]
+    },
+    "ssdts": { "desktop": ["SSDT-PLUG", "SSDT-EC-USBX", "SSDT-PMC"], "laptop": ["SSDT-PLUG", "SSDT-EC-USBX", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-cometlake", "vendor": "Intel", "codenames": ["Comet Lake"],
+    "ranges": [ { "from": "10.15", "to": "26", "level": "supported" } ],
+    "smbios": {
+      "desktop": ["iMac20,1"],
+      "laptop": ["MacBookPro16,3", "MacBookPro16,2"],
+      "laptopH": ["MacBookPro16,1"]
+    },
+    "ssdts": { "desktop": ["SSDT-PLUG", "SSDT-EC-USBX", "SSDT-RHUB"], "laptop": ["SSDT-PLUG", "SSDT-EC-USBX", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-icelake", "vendor": "Intel", "codenames": ["Ice Lake"],
+    "ranges": [ { "from": "10.15", "to": "26", "level": "supported" } ],
+    "smbios": { "laptop": ["MacBookAir9,1", "MacBookPro16,2"] },
+    "ssdts": { "laptop": ["SSDT-PLUG", "SSDT-EC-USBX", "SSDT-RHUB", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-rocketlake", "vendor": "Intel", "codenames": ["Rocket Lake"],
+    "ranges": [ { "from": "11", "to": "26", "level": "patched", "note": "@note.cpuid_spoof" } ],
+    "smbios": { "desktop": ["iMac20,1", "MacPro7,1"] },
+    "ssdts": { "desktop": ["SSDT-PLUG", "SSDT-EC-USBX", "SSDT-RHUB"] }
+  },
+  {
+    "id": "intel-alderlake", "vendor": "Intel", "codenames": ["Alder Lake", "Raptor Lake"],
+    "ranges": [ { "from": "12", "to": "26", "level": "supported", "note": "@note.hybrid_cpu" } ],
+    "smbios": { "desktop": ["MacPro7,1", "iMac20,2"], "laptop": ["MacBookPro16,2"] },
+    "ssdts": { "desktop": ["SSDT-PLUG-ALT", "SSDT-EC-USBX", "SSDT-RHUB"], "laptop": ["SSDT-PLUG-ALT", "SSDT-EC-USBX", "SSDT-PNLF"] },
+    "kexts": [ { "name": "CpuTopologyRebuild" } ]
+  },
+  {
+    "id": "intel-tigerlake", "vendor": "Intel", "codenames": ["Tiger Lake", "Cannon Lake"],
+    "ranges": [ { "from": "11", "to": "26", "level": "unknown", "note": "@note.no_igpu_support" } ],
+    "smbios": { "laptop": ["MacBookPro16,2"] },
+    "ssdts": { "laptop": ["SSDT-PLUG", "SSDT-EC-USBX", "SSDT-PNLF"] }
+  },
+  {
+    "id": "intel-modern-unsupported", "vendor": "Intel", "codenames": ["Meteor Lake", "Lunar Lake", "Arrow Lake"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "unknown", "note": "@note.too_new" } ],
+    "smbios": { "desktop": ["MacPro7,1"], "laptop": ["MacBookPro16,2"] }
+  },
+  {
+    "id": "intel-atom", "vendor": "Intel", "codenames": ["Bay Trail / Braswell", "Apollo Lake", "Gemini Lake", "Elkhart / Jasper Lake"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "unsupported", "note": "@note.atom" } ]
+  },
+  {
+    "id": "amd-legacy", "vendor": "Amd", "codenames": ["Bulldozer", "Jaguar"],
+    "ranges": [
+      { "from": "10.13", "to": "12", "level": "patched", "note": "@note.amd_vanilla" },
+      { "from": "13", "to": "26", "level": "unknown", "note": "@note.cryptexfixup" }
+    ],
+    "smbios": { "desktop": ["iMacPro1,1", "MacPro7,1"] },
+    "ssdts": { "desktop": ["SSDT-EC-USBX"] }
+  },
+  {
+    "id": "amd-zen", "vendor": "Amd", "codenames": ["Zen / Zen+", "Zen 2", "Zen 3"],
+    "ranges": [
+      { "from": "10.13", "to": "15", "level": "supported", "note": "@note.amd_vanilla" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.amd_vanilla_new" }
+    ],
+    "smbios": { "desktop": ["iMacPro1,1", "MacPro7,1"], "laptop": ["MacBookPro16,3", "MacBookPro16,2"] },
+    "ssdts": { "desktop": ["SSDT-EC-USBX"], "laptop": ["SSDT-EC-USBX", "SSDT-PNLF"] },
+    "kexts": [
+      { "name": "AMDRyzenCPUPowerManagement" },
+      { "name": "SMCAMDProcessor" },
+      { "name": "AppleMCEReporterDisabler", "from": "12" },
+      { "name": "RestrictEvents" }
+    ]
+  },
+  {
+    "id": "amd-zen4", "vendor": "Amd", "codenames": ["Zen 4"],
+    "ranges": [
+      { "from": "12", "to": "15", "level": "supported", "note": "@note.amd_vanilla" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.amd_vanilla_new" }
+    ],
+    "smbios": { "desktop": ["MacPro7,1"], "laptop": ["MacBookPro16,2"] },
+    "ssdts": { "desktop": ["SSDT-EC-USBX"], "laptop": ["SSDT-EC-USBX", "SSDT-PNLF"] },
+    "kexts": [
+      { "name": "AMDRyzenCPUPowerManagement" },
+      { "name": "SMCAMDProcessor" },
+      { "name": "AppleMCEReporterDisabler", "from": "12" },
+      { "name": "RestrictEvents" }
+    ]
+  },
+  {
+    "id": "amd-zen5", "vendor": "Amd", "codenames": ["Zen 5"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "unknown", "note": "@note.too_new" } ],
+    "smbios": { "desktop": ["MacPro7,1"] }
+  }
+]

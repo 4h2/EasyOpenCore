@@ -1,0 +1,198 @@
+[
+  {
+    "id": "audio-realtek", "component": "audio", "name": "Realtek ALC (AppleALC)", "vendor": "10EC",
+    "deviceIds": ["0215", "0221", "0222", "0225", "0230", "0233", "0235", "0236", "0245", "0255", "0256", "0257", "0260", "0262", "0268", "0269", "0270", "0272", "0274", "0275", "0280", "0282", "0283", "0284", "0285", "0286", "0288", "0289", "0290", "0292", "0293", "0294", "0295", "0298", "0662", "0663", "0668", "0670", "0671", "0700", "0882", "0883", "0885", "0887", "0888", "0889", "0891", "0892", "0897", "0898", "0899", "1150", "1168", "1220"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported", "note": "@note.layout_id" } ],
+    "kexts": [ { "name": "AppleALC" } ]
+  },
+  {
+    "id": "audio-other", "component": "audio", "name": "HDA codec",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "unknown", "note": "@note.check_applealc" } ],
+    "kexts": [ { "name": "AppleALC" } ]
+  },
+
+  {
+    "id": "eth-intel-mausi", "component": "ethernet", "name": "Intel 8257x/I217/I218/I219", "vendor": "8086",
+    "deviceIds": ["10EA", "10EB", "10EF", "10F0", "1502", "1503", "153A", "153B", "1559", "155A", "156F", "1570", "15A0", "15A1", "15A2", "15A3", "15B7", "15B8", "15B9", "15BB", "15BC", "15BD", "15BE", "15D6", "15D7", "15D8", "15E3", "15F9", "15FA", "15FB", "15FC", "0D4C", "0D4D", "0D4E", "0D4F", "0D53", "0D55", "1A1C", "1A1D", "1A1E", "1A1F", "550A", "550B", "550C", "550D"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "kexts": [ { "name": "IntelMausi" } ]
+  },
+  {
+    "id": "eth-intel-i210", "component": "ethernet", "name": "Intel I210", "vendor": "8086",
+    "deviceIds": ["1533", "1536", "1537", "1538"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported", "note": "@note.native" } ],
+    "kexts": [ { "name": "SmallTreeIntel82576", "to": "10.14" } ]
+  },
+  {
+    "id": "eth-intel-i211", "component": "ethernet", "name": "Intel I211", "vendor": "8086",
+    "deviceIds": ["1539"],
+    "ranges": [
+      { "from": "10.13", "to": "15", "level": "supported" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.unverified" }
+    ],
+    "kexts": [ { "name": "SmallTreeIntel82576" } ]
+  },
+  {
+    "id": "eth-intel-i225", "component": "ethernet", "name": "Intel I225/I226", "vendor": "8086",
+    "deviceIds": ["15F2", "15F3", "125B", "125C", "125D"],
+    "ranges": [
+      { "from": "10.13", "to": "10.15", "level": "unsupported" },
+      { "from": "11", "to": "26", "level": "patched", "note": "@note.i225" }
+    ],
+    "kexts": [ { "name": "AppleIGC", "from": "11" } ]
+  },
+  {
+    "id": "eth-realtek-8111", "component": "ethernet", "name": "Realtek RTL8111/8168 / Killer E2600", "vendor": "10EC",
+    "deviceIds": ["8168", "8161", "2600"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "kexts": [ { "name": "RealtekRTL8111" } ]
+  },
+  {
+    "id": "eth-realtek-8125", "component": "ethernet", "name": "Realtek RTL8125 / Killer E3000", "vendor": "10EC",
+    "deviceIds": ["8125", "3000"],
+    "ranges": [
+      { "from": "10.13", "to": "10.14", "level": "unsupported" },
+      { "from": "10.15", "to": "26", "level": "supported" }
+    ],
+    "kexts": [ { "name": "LucyRTL8125Ethernet" } ]
+  },
+  {
+    "id": "eth-realtek-8100", "component": "ethernet", "name": "Realtek RTL8100/8101", "vendor": "10EC",
+    "deviceIds": ["8136"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "kexts": [ { "name": "RealtekRTL8100" } ]
+  },
+  {
+    "id": "eth-killer-atheros", "component": "ethernet", "name": "Killer E2200/E2400/E2500", "vendor": "1969",
+    "deviceIds": ["E091", "E0A1", "E0B1"],
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "kexts": [ { "name": "AtherosE2200Ethernet" } ]
+  },
+  {
+    "id": "eth-aquantia", "component": "ethernet", "name": "Aquantia AQC107/AQC113", "vendor": "1D6A",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported", "note": "@note.aquantia" } ]
+  },
+  {
+    "id": "eth-other", "component": "ethernet", "name": "Ethernet",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "unknown", "note": "@note.check_manually" } ]
+  },
+
+  {
+    "id": "wifi-intel-be", "component": "wifi", "name": "Intel Wi-Fi 7 (BE20x)", "vendor": "8086",
+    "nameRegex": "BE20[0-9]",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "unsupported", "note": "@note.wifi_swap" } ]
+  },
+  {
+    "id": "wifi-intel", "component": "wifi", "name": "Intel Wi-Fi (itlwm)", "vendor": "8086",
+    "ranges": [
+      { "from": "10.13", "to": "15", "level": "supported", "note": "@note.itlwm" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.unverified" }
+    ],
+    "kexts": [ { "name": "AirportItlwm", "from": "11", "to": "13" }, { "name": "itlwm", "to": "10.15" }, { "name": "itlwm", "from": "14" } ]
+  },
+  {
+    "id": "wifi-brcm-native", "component": "wifi", "name": "Broadcom BCM94360/43602", "vendor": "14E4",
+    "deviceIds": ["43A0", "43BA"],
+    "ranges": [
+      { "from": "10.13", "to": "13", "level": "supported", "note": "@note.native" },
+      { "from": "14", "to": "15", "level": "patched", "note": "@note.oclp_wifi" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.oclp_wifi" }
+    ]
+  },
+  {
+    "id": "wifi-brcm-fixup", "component": "wifi", "name": "Broadcom BCM4350/4352 (DW1820A/DW1560)", "vendor": "14E4",
+    "deviceIds": ["43A3", "43B1"],
+    "ranges": [
+      { "from": "10.13", "to": "13", "level": "supported" },
+      { "from": "14", "to": "15", "level": "patched", "note": "@note.oclp_wifi" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.oclp_wifi" }
+    ],
+    "kexts": [ { "name": "AirportBrcmFixup" } ]
+  },
+  {
+    "id": "wifi-brcm-legacy", "component": "wifi", "name": "Broadcom BCM4331/43224/4322", "vendor": "14E4",
+    "deviceIds": ["4331", "4353", "432B"],
+    "ranges": [
+      { "from": "10.13", "to": "11", "level": "supported" },
+      { "from": "12", "to": "15", "level": "patched", "note": "@note.oclp_wifi" },
+      { "from": "26", "to": "26", "level": "unknown" }
+    ]
+  },
+  {
+    "id": "wifi-atheros-legacy", "component": "wifi", "name": "Atheros AR9xxx", "vendor": "168C",
+    "deviceIds": ["002A", "002B", "0030", "0032", "0034"],
+    "ranges": [
+      { "from": "10.13", "to": "10.13", "level": "supported" },
+      { "from": "10.14", "to": "11", "level": "patched", "note": "@note.atheros" },
+      { "from": "12", "to": "26", "level": "unsupported" }
+    ]
+  },
+  {
+    "id": "wifi-unsupported", "component": "wifi", "name": "Realtek / MediaTek / Qualcomm Wi-Fi",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "unsupported", "note": "@note.wifi_swap" } ]
+  },
+
+  {
+    "id": "bt-intel", "component": "bluetooth", "name": "Intel Bluetooth", "vendor": "8087",
+    "ranges": [
+      { "from": "10.13", "to": "15", "level": "supported" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.unverified" }
+    ],
+    "kexts": [ { "name": "IntelBluetoothFirmware" }, { "name": "IntelBTPatcher" }, { "name": "BlueToolFixup", "from": "12" } ]
+  },
+  {
+    "id": "bt-broadcom", "component": "bluetooth", "name": "Broadcom Bluetooth",
+    "vendor": "0A5C",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "kexts": [ { "name": "BrcmPatchRAM3" }, { "name": "BrcmFirmwareData" }, { "name": "BrcmBluetoothInjector", "to": "11" }, { "name": "BlueToolFixup", "from": "12" } ]
+  },
+  {
+    "id": "bt-broadcom-oem", "component": "bluetooth", "name": "Broadcom Bluetooth (OEM)",
+    "nameRegex": "Broadcom|BCM",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "kexts": [ { "name": "BrcmPatchRAM3" }, { "name": "BrcmFirmwareData" }, { "name": "BrcmBluetoothInjector", "to": "11" }, { "name": "BlueToolFixup", "from": "12" } ]
+  },
+  {
+    "id": "bt-other", "component": "bluetooth", "name": "Bluetooth",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "unsupported", "note": "@note.bt_unsupported" } ]
+  },
+
+  {
+    "id": "nvme-samsung-pm981", "component": "nvme", "name": "Samsung PM981/PM991",
+    "nameRegex": "PM981|PM991|MZVLB|MZ9LB|MZALQ|MZVLQ|MZ9LQ",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "unsupported", "note": "@note.bad_nvme" } ]
+  },
+  {
+    "id": "nvme-micron-2200s", "component": "nvme", "name": "Micron 2200S",
+    "nameRegex": "2200S|MTFDHBA\\d+TC",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "unsupported", "note": "@note.bad_nvme" } ]
+  },
+  {
+    "id": "nvme-generic", "component": "nvme", "name": "NVMe SSD",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "kexts": [ { "name": "NVMeFix" } ]
+  },
+  {
+    "id": "sata-generic", "component": "sata", "name": "SATA (AHCI)",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported", "note": "@note.native" } ]
+  },
+
+  {
+    "id": "input-ps2", "component": "input-ps2", "name": "PS/2 keyboard / trackpad",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "kexts": [ { "name": "VoodooPS2Controller" } ]
+  },
+  {
+    "id": "input-i2c", "component": "input-i2c", "name": "I2C HID trackpad",
+    "ranges": [
+      { "from": "10.13", "to": "15", "level": "supported", "note": "@note.i2c" },
+      { "from": "26", "to": "26", "level": "unknown", "note": "@note.unverified" }
+    ],
+    "kexts": [ { "name": "VoodooI2C" }, { "name": "VoodooI2CHID" } ]
+  },
+  {
+    "id": "input-smbus", "component": "input-smbus", "name": "Synaptics SMBus trackpad",
+    "ranges": [ { "from": "10.13", "to": "26", "level": "supported" } ],
+    "kexts": [ { "name": "VoodooPS2Controller" }, { "name": "VoodooSMBus" }, { "name": "VoodooRMI" } ]
+  }
+]
