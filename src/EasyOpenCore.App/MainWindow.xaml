@@ -413,7 +413,7 @@
                                               AutomationProperties.Name="{l:Tr installer.title}">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Display}" Foreground="#1B1F24"/>
+                                                <TextBlock Text="{Binding Display}"/>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
@@ -552,7 +552,7 @@
                                                                           AutomationProperties.Name="{l:Tr usb.connector}">
                                                                     <ComboBox.ItemTemplate>
                                                                         <DataTemplate>
-                                                                            <TextBlock Text="{Binding Label}" Foreground="#1B1F24"/>
+                                                                            <TextBlock Text="{Binding Label}"/>
                                                                         </DataTemplate>
                                                                     </ComboBox.ItemTemplate>
                                                                 </ComboBox>
