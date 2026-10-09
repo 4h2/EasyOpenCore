@@ -39,8 +39,8 @@ dotnet test
 - [x] English / Português (Brasil)
 - [x] EFI builder: downloads OpenCore and kexts from GitHub releases, generates SSDTs (AML) with the real ACPI paths, writes `config.plist` from the release's `Sample.plist`, validates with `ocvalidate`
 - [x] AppleALC layout-id matched to the machine model, AMD Vanilla patches with the core count, macserial serials
-- [ ] USB mapping (UTBMap.kext)
-- [ ] Write the EFI to a USB drive and download the macOS recovery
+- [x] USB mapping: live port discovery through the Windows USB hub IOCTLs, USBToolBox-compatible UTBMap.kext
+- [x] USB installer: copy EFI to a FAT32 drive (optional elevated format), download the macOS recovery from Apple with chunklist signature verification
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design.
 

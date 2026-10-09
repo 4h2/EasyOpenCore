@@ -351,5 +351,23 @@
   "connector.TypeCUsb2Only": "Tipo C (só USB 2)",
   "connector.TypeCWithSwitch": "Tipo C (mesma porta nos dois lados)",
   "connector.TypeCWithoutSwitch": "Tipo C (porta diferente por lado)",
-  "connector.Internal": "Interno"
+  "connector.Internal": "Interno",
+
+  "usb.confirm_reset": "Esquecer todas as portas descobertas e recomeçar o mapa de USB?",
+  "installer.title": "PENDRIVE DE INSTALAÇÃO",
+  "installer.subtitle": "Copia esta EFI (e, se quiser, o recovery do macOS) para um pendrive. Inicie o PC alvo por ele para instalar o macOS.",
+  "installer.refresh": "Atualizar",
+  "installer.recovery": "Baixar o recovery do macOS da Apple (cerca de 1 GB, verificado com a assinatura da Apple)",
+  "installer.format": "Apagar e formatar o pendrive em FAT32 (todos os dados serão perdidos)",
+  "installer.create": "Criar pendrive",
+  "installer.no_disks": "Nenhum pendrive encontrado. Conecte um e clique em Atualizar.",
+  "installer.confirm_format": "TODOS OS DADOS deste pendrive serão apagados:\n\n{0}\n\nContinuar?",
+  "installer.confirm_overwrite": "{0} já tem uma pasta EFI. Substituir?",
+  "installer.needs_fat32": "Este pendrive não tem volume FAT32. Marque a opção de formatar.",
+  "installer.formatting": "Formatando (confirme o aviso de administrador)...",
+  "installer.asking_apple": "Pedindo à Apple o recovery do {0}...",
+  "installer.downloading": "Baixando {0}: {1} / {2} MB",
+  "installer.copying": "Copiando arquivos para {0}...",
+  "installer.done": "Pendrive pronto em {0}. Inicie o PC alvo por ele e escolha o recovery do macOS no OpenCore.",
+  "installer.no_board": "O OpenCore não tem entrada de recovery para {0}."
 }

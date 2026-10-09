@@ -116,7 +116,8 @@ public sealed class BuildViewModel : INotifyPropertyChanged
         {
             using var github = new GitHubClient();
             var progress = new Progress<string>(s => Log.Add(s));
-            var result = await new EfiBuilder(github).BuildAsync(_hardware!, _compat.Report, _compat.SelectedVersion, OutputFolder, progress);
+            var result = await new EfiBuilder(github).BuildAsync(_hardware!, _compat.Report, _compat.SelectedVersion, OutputFolder, progress,
+                usbMap: Core.Usb.UsbMap.Load());
 
             foreach (var k in result.Kexts)
                 Kexts.Add(new BuildLine($"{k.Name} {k.Version}", k.Source));

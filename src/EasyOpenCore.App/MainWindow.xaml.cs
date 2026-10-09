@@ -7,6 +7,7 @@ using EasyOpenCore.App.ViewModels;
 using EasyOpenCore.Core;
 using EasyOpenCore.Core.Hardware;
 using EasyOpenCore.Core.Localization;
+using EasyOpenCore.Core.Usb;
 using Microsoft.Win32;
 
 namespace EasyOpenCore.App;
@@ -68,6 +69,39 @@ public partial class MainWindow : Window
         if (Vm.Build.LastEfiFolder is { } folder && Directory.Exists(folder))
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", folder) { UseShellExecute = true });
     }
+
+    private void OnToggleDiscovery(object sender, RoutedEventArgs e) => Vm.Usb.ToggleDiscovery();
+
+    private void OnResetUsbMap(object sender, RoutedEventArgs e)
+    {
+        if (Confirm(Loc.T("usb.confirm_reset")))
+            Vm.Usb.Reset();
+    }
+
+    private void OnInstallUsbMap(object sender, RoutedEventArgs e)
+    {
+        if (Vm.Build.LastEfiFolder is not { } folder)
+        {
+            Vm.Usb.Message = Loc.T("usb.no_efi");
+            return;
+        }
+        try
+        {
+            UsbMapInstaller.Install(folder, Vm.Usb.Map);
+            Vm.Usb.Message = Loc.T("usb.installed", folder);
+        }
+        catch (IOException ex)
+        {
+            Vm.Usb.Message = ex.Message;
+        }
+    }
+
+    private void OnRefreshDisks(object sender, RoutedEventArgs e) => Vm.Installer.RefreshDisks();
+
+    private async void OnCreateUsb(object sender, RoutedEventArgs e) => await Vm.Installer.CreateAsync(Confirm);
+
+    private bool Confirm(string message) =>
+        MessageBox.Show(this, message, "EasyOpenCore", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
 
     private void OnExportJson(object sender, RoutedEventArgs e)
     {

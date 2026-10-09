@@ -402,6 +402,37 @@
                             </StackPanel>
                         </Border>
 
+                        <!-- USB installer -->
+                        <Border Style="{StaticResource Card}" DataContext="{Binding DataContext.Installer, RelativeSource={RelativeSource AncestorType=Window}}">
+                            <StackPanel>
+                                <TextBlock Text="{l:Tr installer.title}" Style="{StaticResource SectionTitle}"/>
+                                <TextBlock Text="{l:Tr installer.subtitle}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="{l:Tr installer.refresh}" Margin="8,0,0,0" Click="OnRefreshDisks"/>
+                                    <ComboBox ItemsSource="{Binding Disks}" SelectedItem="{Binding SelectedDisk}" VerticalContentAlignment="Center"
+                                              AutomationProperties.Name="{l:Tr installer.title}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Display}" Foreground="#1B1F24"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </DockPanel>
+                                <CheckBox IsChecked="{Binding IncludeRecovery}" Margin="0,10,0,0">
+                                    <TextBlock Text="{l:Tr installer.recovery}"/>
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding Format}" Margin="0,6,0,0">
+                                    <TextBlock Text="{l:Tr installer.format}" Foreground="{StaticResource WarningBrush}"/>
+                                </CheckBox>
+                                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                    <Button Style="{StaticResource PrimaryButton}" Content="{l:Tr installer.create}" Click="OnCreateUsb" IsEnabled="{Binding CanCreate}"/>
+                                    <ProgressBar Width="220" Height="6" Margin="16,0,0,0" VerticalAlignment="Center" Maximum="100" Value="{Binding Progress, Mode=OneWay}"
+                                                 Visibility="{Binding Busy, Converter={StaticResource BoolToVis}}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Status}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -449,6 +480,98 @@
                                 </Border>
                             </StackPanel>
                         </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ============ USB MAPPING ============ -->
+            <TabItem Style="{StaticResource NavTab}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE88E;" Style="{StaticResource NavIcon}"/>
+                        <TextBlock Text="{l:Tr nav.usb}" Style="{StaticResource NavLabel}"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,24" DataContext="{Binding Usb}">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,16">
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top">
+                                <Button Style="{StaticResource GhostButton}" Content="{l:Tr usb.reset}" Margin="0,0,8,0" Click="OnResetUsbMap"/>
+                                <Button Style="{StaticResource GhostButton}" Content="{l:Tr usb.install}" Margin="0,0,8,0" Click="OnInstallUsbMap"/>
+                                <Button Style="{StaticResource PrimaryButton}" Content="{Binding DiscoverText}" Click="OnToggleDiscovery"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,16,0">
+                                <TextBlock Text="{l:Tr usb.title}" FontSize="24" FontWeight="SemiBold"/>
+                                <TextBlock Text="{l:Tr usb.subtitle}" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                <TextBlock Text="{l:Tr usb.hint}" Foreground="{StaticResource MutedBrush}" FontSize="11.5" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </DockPanel>
+                        <TextBlock Text="{Binding Message}" Foreground="{StaticResource WarningBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+                        <ItemsControl ItemsSource="{Binding Controllers}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource Card}">
+                                        <StackPanel>
+                                            <DockPanel Margin="0,0,0,10">
+                                                <TextBlock DockPanel.Dock="Right" Text="{Binding CountText}" VerticalAlignment="Center" FontWeight="SemiBold">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                            <Setter Property="Foreground" Value="{StaticResource SupportedBrush}"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding OverLimit}" Value="True">
+                                                                    <Setter Property="Foreground" Value="{StaticResource BlockerBrush}"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Subtitle}" Foreground="{StaticResource MutedBrush}" FontSize="11.5"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                            <ItemsControl ItemsSource="{Binding Ports}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border CornerRadius="6" Padding="10,6" Margin="0,0,0,4">
+                                                            <Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Setter Property="Background" Value="{StaticResource CardHoverBrush}"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Connected}" Value="True">
+                                                                            <Setter Property="Background" Value="#1F3FB950"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Border.Style>
+                                                            <DockPanel>
+                                                                <ComboBox DockPanel.Dock="Right" Width="250" VerticalAlignment="Center"
+                                                                          ItemsSource="{Binding DataContext.Usb.Connectors, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                          SelectedValuePath="Value" SelectedValue="{Binding Connector}"
+                                                                          AutomationProperties.Name="{l:Tr usb.connector}">
+                                                                    <ComboBox.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <TextBlock Text="{Binding Label}" Foreground="#1B1F24"/>
+                                                                        </DataTemplate>
+                                                                    </ComboBox.ItemTemplate>
+                                                                </ComboBox>
+                                                                <CheckBox IsChecked="{Binding Selected}" VerticalAlignment="Center" Margin="0,0,10,0"
+                                                                          AutomationProperties.Name="{Binding Title}"/>
+                                                                <StackPanel VerticalAlignment="Center">
+                                                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
+                                                                    <TextBlock Text="{Binding Detail}" Foreground="{StaticResource MutedBrush}" FontSize="11.5" TextTrimming="CharacterEllipsis"/>
+                                                                </StackPanel>
+                                                            </DockPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

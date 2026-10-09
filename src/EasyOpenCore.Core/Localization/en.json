@@ -351,5 +351,23 @@
   "connector.TypeCUsb2Only": "Type-C (USB 2 only)",
   "connector.TypeCWithSwitch": "Type-C (same port both ways)",
   "connector.TypeCWithoutSwitch": "Type-C (different port per side)",
-  "connector.Internal": "Internal"
+  "connector.Internal": "Internal",
+
+  "usb.confirm_reset": "Forget every discovered port and start the USB map again?",
+  "installer.title": "USB INSTALLER",
+  "installer.subtitle": "Copies this EFI (and optionally the macOS recovery) to a USB drive. Boot the target PC from it to install macOS.",
+  "installer.refresh": "Refresh",
+  "installer.recovery": "Download the macOS recovery from Apple (about 1 GB, verified with Apple's signature)",
+  "installer.format": "Erase and format the drive as FAT32 (all data on it will be lost)",
+  "installer.create": "Create USB installer",
+  "installer.no_disks": "No USB drive found. Plug one in and click Refresh.",
+  "installer.confirm_format": "ALL DATA on this drive will be erased:\n\n{0}\n\nContinue?",
+  "installer.confirm_overwrite": "{0} already has an EFI folder. Replace it?",
+  "installer.needs_fat32": "This drive has no FAT32 volume. Enable the format option.",
+  "installer.formatting": "Formatting (confirm the administrator prompt)...",
+  "installer.asking_apple": "Asking Apple for the {0} recovery...",
+  "installer.downloading": "Downloading {0}: {1} / {2} MB",
+  "installer.copying": "Copying files to {0}...",
+  "installer.done": "USB installer ready at {0}. Boot the target PC from it and choose the macOS recovery in OpenCore.",
+  "installer.no_board": "OpenCore has no recovery entry for {0}."
 }

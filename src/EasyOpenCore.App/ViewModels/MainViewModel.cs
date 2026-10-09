@@ -26,6 +26,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public MainViewModel()
     {
         Build = new BuildViewModel(Compat);
+        Installer = new UsbInstallerViewModel(Build, Compat);
         DevicesView = CollectionViewSource.GetDefaultView(Devices);
         DevicesView.Filter = FilterDevice;
         Loc.Instance.LanguageChanged += (_, _) =>
@@ -66,6 +67,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     public CompatViewModel Compat { get; } = new();
     public BuildViewModel Build { get; }
+    public UsbMapViewModel Usb { get; } = new();
+    public UsbInstallerViewModel Installer { get; }
 
     public ObservableCollection<SummaryCard> Cards { get; } = [];
     public ObservableCollection<Finding> Findings { get; } = [];
@@ -169,6 +172,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
         Compat.Load(r);
         Build.SetHardware(r);
+        _ = Usb.LoadAsync();
+        Installer.RefreshDisks();
     }
 
     private bool FilterDevice(object o)
