@@ -1,6 +1,7 @@
 using EasyOpenCore.Core;
 using EasyOpenCore.Core.Checks;
 using EasyOpenCore.Core.Compatibility;
+using EasyOpenCore.Core.Efi;
 using EasyOpenCore.Core.Hardware;
 using EasyOpenCore.Core.Localization;
 
@@ -10,6 +11,7 @@ using EasyOpenCore.Core.Localization;
 //   eoc --acpi folder         -> export the ACPI tables (.aml)
 //   eoc --macos 15            -> EFI plan for a specific macOS version (default: recommended)
 //   eoc --lang pt-BR          -> output language (default: en)
+//   eoc --build folder        -> download everything and build the EFI for --macos (or the recommended version)
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 string? Arg(string name)
@@ -119,3 +121,18 @@ if (target is not null && compat.Versions.Any(v => v.Id == target))
 }
 
 Console.WriteLine($"\n{report.AllDevices.Count} devices enumerated. Errors: {report.ScanErrors.Count}");
+
+if (Arg("--build") is { } buildDir && target is not null)
+{
+    using var github = new GitHubClient();
+    var result = await new EfiBuilder(github).BuildAsync(report, compat, target, Path.GetFullPath(buildDir),
+        new Progress<string>(s => Console.Error.WriteLine($"[build] {s}")));
+
+    Console.WriteLine($"\n== EFI built in {result.OutputDirectory} (OpenCore {result.OpenCoreVersion}) ==");
+    foreach (var k in result.Kexts) Console.WriteLine($"  {k.Name,-28} {k.Version,-10} {k.Source}");
+    foreach (var k in result.MissingKexts) Console.WriteLine($"  MISSING {k.Name}: {k.Reason} {k.Url}");
+    Console.WriteLine($"SSDTs: {string.Join(", ", result.Ssdts)}");
+    foreach (var m in result.ManualSsdts) Console.WriteLine($"  Manual: {m.Name} — {Loc.T(m.ReasonKey)}");
+    if (result.Audio is { } a) Console.WriteLine($"Audio: layout-id {a.LayoutId} at {a.ControllerPath}");
+    Console.WriteLine($"ocvalidate: {(result.ValidationPassed ? "PASSED" : "FAILED")}\n{result.ValidationOutput}");
+}

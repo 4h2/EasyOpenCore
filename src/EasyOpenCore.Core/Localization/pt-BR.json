@@ -278,5 +278,26 @@
   "plan.bootarg.debug": "Saída detalhada e de debug durante a instalação (remova depois).",
   "plan.bootarg.lilubeta": "Permite carregar kexts no macOS mais novo antes de declararem suporte.",
   "plan.bootarg.wegnoegpu": "Desativa a {0} sem suporte.",
-  "plan.bootarg.for": "Para {0}."
+  "plan.bootarg.for": "Para {0}.",
+
+  "plan.kext.mce": "Impede o kernel panic do AppleMCEReporter em AMD com este SMBIOS.",
+  "build.step.opencore": "Baixando o OpenCore",
+  "build.step.kext": "Baixando {0}",
+  "build.step.ssdt": "Gerando as SSDTs",
+  "build.step.smbios": "Gerando números de série para {0}",
+  "build.step.audio": "Escolhendo o layout de áudio",
+  "build.step.amd": "Baixando os patches AMD Vanilla",
+  "build.step.config": "Gravando o config.plist",
+  "build.step.validate": "Validando com o ocvalidate",
+  "build.error.exists": "{0} já existe. Escolha uma pasta vazia.",
+  "build.kext.utbmap": "Crie com o USBToolBox (Windows) depois de mapear as portas e adicione em EFI/OC/Kexts e no config.plist.",
+  "build.kext.download_failed": "Falha no download: {0}",
+  "build.kext.manual": "Não está disponível como release no GitHub; baixe manualmente.",
+  "ssdt.manual.SSDT-CPU-PM": "Gere no macOS com o ssdtPRgen (gerenciamento de energia Sandy/Ivy Bridge).",
+  "ssdt.manual.SSDT-GPIO": "Precisa do pino GPIO do trackpad; siga o guia de GPIO pinning do VoodooI2C.",
+  "ssdt.manual.SSDT-UNC": "Use a SSDT-UNC pronta do OpenCorePkg se a sua placa precisar.",
+  "ssdt.manual.SSDT-RTC0-RANGE": "Use a SSDT-RTC0-RANGE do OpenCorePkg depois de conferir as faixas do RTC na DSDT.",
+  "ssdt.manual.SSDT-PLUG": "Nenhum objeto de CPU encontrado no ACPI; crie a SSDT-PLUG manualmente.",
+  "ssdt.manual.SSDT-RHUB": "Nenhum caminho ACPI de controladora USB encontrado; crie a SSDT-RHUB manualmente.",
+  "ssdt.manual.SSDT-dGPU-Off": "A dGPU não tem caminho ACPI; desative-a na BIOS ou crie a SSDT-dGPU-Off manualmente."
 }

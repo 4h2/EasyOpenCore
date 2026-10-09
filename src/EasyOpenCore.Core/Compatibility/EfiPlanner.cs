@@ -114,6 +114,11 @@ public static class EfiPlanner
         if (plan.Smbios == "MacPro7,1")
             Add("RestrictEvents", Loc.T("plan.kext.restrictevents"));
 
+        // AppleMCEReporter panics on AMD CPUs, but only loads with Mac Pro / iMac Pro SMBIOS.
+        if (hw.Cpu.Vendor == CpuVendor.Amd && plan.Smbios is "MacPro6,1" or "MacPro7,1" or "iMacPro1,1"
+            && db.IndexOf(plan.Version.Id) >= db.IndexOf("12"))
+            Add("AppleMCEReporterDisabler", Loc.T("plan.kext.mce"));
+
         Add("USBToolBox", Loc.T("plan.kext.usbtoolbox"));
         Add("UTBMap", Loc.T("plan.kext.utbmap"));
 

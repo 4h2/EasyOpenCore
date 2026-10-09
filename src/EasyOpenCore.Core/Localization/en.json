@@ -278,5 +278,26 @@
   "plan.bootarg.debug": "Verbose and debug output during installation (remove when done).",
   "plan.bootarg.lilubeta": "Lets kexts load on the newest macOS before they declare support.",
   "plan.bootarg.wegnoegpu": "Disables the unsupported {0}.",
-  "plan.bootarg.for": "For {0}."
+  "plan.bootarg.for": "For {0}.",
+
+  "plan.kext.mce": "Stops AppleMCEReporter from panicking on AMD with this SMBIOS.",
+  "build.step.opencore": "Downloading OpenCore",
+  "build.step.kext": "Downloading {0}",
+  "build.step.ssdt": "Generating SSDTs",
+  "build.step.smbios": "Generating serial numbers for {0}",
+  "build.step.audio": "Choosing the audio layout",
+  "build.step.amd": "Downloading AMD Vanilla patches",
+  "build.step.config": "Writing config.plist",
+  "build.step.validate": "Validating with ocvalidate",
+  "build.error.exists": "{0} already exists. Choose an empty folder.",
+  "build.kext.utbmap": "Create it with USBToolBox (Windows) after mapping your ports, then add it to EFI/OC/Kexts and config.plist.",
+  "build.kext.download_failed": "Download failed: {0}",
+  "build.kext.manual": "Not available as a GitHub release; download it manually.",
+  "ssdt.manual.SSDT-CPU-PM": "Generate it on macOS with ssdtPRgen (Sandy/Ivy Bridge power management).",
+  "ssdt.manual.SSDT-GPIO": "Needs the GPIO pin of your trackpad; follow the VoodooI2C GPIO pinning guide.",
+  "ssdt.manual.SSDT-UNC": "Use OpenCorePkg's prebuilt SSDT-UNC if your board needs it.",
+  "ssdt.manual.SSDT-RTC0-RANGE": "Use OpenCorePkg's SSDT-RTC0-RANGE after checking the RTC ranges in your DSDT.",
+  "ssdt.manual.SSDT-PLUG": "No CPU object was found in ACPI; create SSDT-PLUG manually.",
+  "ssdt.manual.SSDT-RHUB": "No USB controller ACPI path was found; create SSDT-RHUB manually.",
+  "ssdt.manual.SSDT-dGPU-Off": "The dGPU has no ACPI path; disable it in the BIOS or create SSDT-dGPU-Off manually."
 }

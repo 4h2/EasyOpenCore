@@ -165,9 +165,7 @@
     "ssdts": { "desktop": ["SSDT-EC-USBX"], "laptop": ["SSDT-EC-USBX", "SSDT-PNLF"] },
     "kexts": [
       { "name": "AMDRyzenCPUPowerManagement" },
-      { "name": "SMCAMDProcessor" },
-      { "name": "AppleMCEReporterDisabler", "from": "12" },
-      { "name": "RestrictEvents" }
+      { "name": "SMCAMDProcessor" }
     ]
   },
   {
@@ -180,9 +178,7 @@
     "ssdts": { "desktop": ["SSDT-EC-USBX"], "laptop": ["SSDT-EC-USBX", "SSDT-PNLF"] },
     "kexts": [
       { "name": "AMDRyzenCPUPowerManagement" },
-      { "name": "SMCAMDProcessor" },
-      { "name": "AppleMCEReporterDisabler", "from": "12" },
-      { "name": "RestrictEvents" }
+      { "name": "SMCAMDProcessor" }
     ]
   },
   {

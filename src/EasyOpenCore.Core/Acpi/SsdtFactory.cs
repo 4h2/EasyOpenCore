@@ -108,15 +108,21 @@ public static class SsdtFactory
     /// </summary>
     private static GeneratedSsdt ProcessorObjects(string name, string tableId, int threads, bool withPlugin, string comment)
     {
+        // Same shape as OpenCorePkg's Docs/AcpiSamples/Source/SSDT-PLUG-ALT.dsl.
         var cpus = new List<AmlNode>();
         for (int i = 0; i < Math.Min(threads, 255); i++)
         {
-            var body = withPlugin && i == 0
-                ? new AmlNode[] { Dsm(new AmlString("plugin-type"), new AmlInt(1)) }
-                : [];
-            cpus.Add(new AmlProcessor($"CP{i:X2}", (byte)i, 0x00000510, 0x06, body));
+            var body = new List<AmlNode>
+            {
+                new AmlName("_HID", new AmlString("ACPI0007")),
+                new AmlName("_UID", new AmlInt((ulong)i)),
+                Sta(0x0F, 0x00),
+            };
+            if (withPlugin && i == 0)
+                body.Add(Dsm(new AmlString("plugin-type"), new AmlInt(1)));
+            cpus.Add(new AmlProcessor($"CP{i:X2}", (byte)i, 0x00000510, 0x06, [.. body]));
         }
-        return Make(name, new AmlTable(tableId, new AmlScope(@"\_SB", new AmlIf(Darwin(), [.. cpus]))), comment);
+        return Make(name, new AmlTable(tableId, new AmlScope(@"\_SB", [.. cpus])), comment);
     }
 
     // ---- Embedded controller / USB power ----
