@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <Product>EasyOpenCore</Product>
+    <Description>Windows assistant that scans the hardware and builds an OpenCore EFI following the Dortania guide.</Description>
+    <RepositoryUrl>https://github.com/4h2/EasyOpenCore</RepositoryUrl>
+  </PropertyGroup>
+</Project>
