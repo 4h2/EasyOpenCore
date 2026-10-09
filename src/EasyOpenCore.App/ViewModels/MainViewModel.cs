@@ -25,6 +25,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     public MainViewModel()
     {
+        Build = new BuildViewModel(Compat);
         DevicesView = CollectionViewSource.GetDefaultView(Devices);
         DevicesView.Filter = FilterDevice;
         Loc.Instance.LanguageChanged += (_, _) =>
@@ -64,6 +65,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public string MachineTitle => _report is null ? "" : $"{_report.System.Manufacturer} {_report.System.Model}".Trim();
 
     public CompatViewModel Compat { get; } = new();
+    public BuildViewModel Build { get; }
 
     public ObservableCollection<SummaryCard> Cards { get; } = [];
     public ObservableCollection<Finding> Findings { get; } = [];
@@ -166,6 +168,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
             AcpiTables.Add(t);
 
         Compat.Load(r);
+        Build.SetHardware(r);
     }
 
     private bool FilterDevice(object o)

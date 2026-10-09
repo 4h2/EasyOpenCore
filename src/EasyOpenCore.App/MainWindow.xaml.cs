@@ -54,6 +54,21 @@ public partial class MainWindow : Window
         App.Settings.Save();
     }
 
+    private async void OnBuild(object sender, RoutedEventArgs e) => await Vm.Build.BuildAsync();
+
+    private void OnBrowseOutput(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFolderDialog { Title = Loc.T("build.folder_label") };
+        if (dialog.ShowDialog(this) == true)
+            Vm.Build.OutputFolder = Path.Combine(dialog.FolderName, "EasyOpenCore-EFI");
+    }
+
+    private void OnOpenEfi(object sender, RoutedEventArgs e)
+    {
+        if (Vm.Build.LastEfiFolder is { } folder && Directory.Exists(folder))
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", folder) { UseShellExecute = true });
+    }
+
     private void OnExportJson(object sender, RoutedEventArgs e)
     {
         if (Vm.Report is null)

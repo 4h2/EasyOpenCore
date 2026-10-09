@@ -34,6 +34,8 @@ public sealed class CompatViewModel : INotifyPropertyChanged
 
     public int VersionCount => Versions.Count;
 
+    public CompatibilityReport? Report => _report;
+
     public string Recommendation
     {
         get => _recommendation;

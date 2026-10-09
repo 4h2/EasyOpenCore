@@ -347,6 +347,112 @@
                 </ScrollViewer>
             </TabItem>
 
+            <!-- ============ BUILD EFI ============ -->
+            <TabItem Style="{StaticResource NavTab}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE835;" Style="{StaticResource NavIcon}"/>
+                        <TextBlock Text="{l:Tr nav.build}" Style="{StaticResource NavLabel}"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,24" DataContext="{Binding Build}">
+                    <StackPanel>
+                        <TextBlock Text="{l:Tr build.title}" FontSize="24" FontWeight="SemiBold"/>
+                        <TextBlock Text="{l:Tr build.subtitle}" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,16" TextWrapping="Wrap"/>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="{l:Tr build.target_label}" Style="{StaticResource SectionTitle}"/>
+                                <TextBlock Text="{Binding TargetText}" FontSize="15" FontWeight="SemiBold"/>
+                                <TextBlock Text="{l:Tr build.target_hint}" Foreground="{StaticResource MutedBrush}" FontSize="11.5" Margin="0,2,0,14"/>
+
+                                <TextBlock Text="{l:Tr build.folder_label}" Style="{StaticResource SectionTitle}"/>
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="{l:Tr build.browse}" Margin="8,0,0,0" Click="OnBrowseOutput"/>
+                                    <TextBox Text="{Binding OutputFolder, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+                                </DockPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                    <Button Style="{StaticResource PrimaryButton}" Content="{l:Tr build.button}" Click="OnBuild" IsEnabled="{Binding CanBuild}"/>
+                                    <Button Style="{StaticResource GhostButton}" Content="{l:Tr build.open}" Margin="8,0,0,0" Click="OnOpenEfi"
+                                            Visibility="{Binding HasResult, Converter={StaticResource BoolToVis}}"/>
+                                    <ProgressBar Width="160" Height="4" IsIndeterminate="True" Margin="16,0,0,0" VerticalAlignment="Center"
+                                                 Visibility="{Binding IsBuilding, Converter={StaticResource BoolToVis}}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Error}" Foreground="{StaticResource BlockerBrush}" TextWrapping="Wrap" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Visibility="{Binding HasResult, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <TextBlock Text="OCVALIDATE" Style="{StaticResource SectionTitle}"/>
+                                <TextBlock Text="{Binding ValidationText}" FontSize="15" FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                            <Setter Property="Foreground" Value="{StaticResource BlockerBrush}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ValidationPassed}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource SupportedBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding ValidationOutput}" FontFamily="Cascadia Mono, Consolas" FontSize="11" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}" VerticalAlignment="Top" Visibility="{Binding HasResult, Converter={StaticResource BoolToVis}}">
+                                <StackPanel>
+                                    <TextBlock Text="{l:Tr build.kexts}" Style="{StaticResource SectionTitle}"/>
+                                    <ItemsControl ItemsSource="{Binding Kexts}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Margin="0,0,0,6">
+                                                    <TextBlock Text="{Binding Title}" FontFamily="Cascadia Mono, Consolas" FontSize="12.5"/>
+                                                    <TextBlock Text="{Binding Detail}" Foreground="{StaticResource MutedBrush}" FontSize="11"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <TextBlock Text="SSDTS" Style="{StaticResource SectionTitle}" Margin="0,8,0,8"/>
+                                    <ItemsControl ItemsSource="{Binding Ssdts}" ItemTemplate="{StaticResource MutedLineTemplate}"/>
+                                </StackPanel>
+                            </Border>
+                            <StackPanel Grid.Column="2">
+                                <Border Style="{StaticResource Card}" Visibility="{Binding HasResult, Converter={StaticResource BoolToVis}}">
+                                    <StackPanel>
+                                        <TextBlock Text="{l:Tr build.manual}" Style="{StaticResource SectionTitle}" Foreground="{StaticResource WarningBrush}"/>
+                                        <ItemsControl ItemsSource="{Binding ManualSteps}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Margin="0,0,0,8">
+                                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
+                                                        <TextBlock Text="{Binding Detail}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource Card}">
+                                    <StackPanel>
+                                        <TextBlock Text="{l:Tr build.log}" Style="{StaticResource SectionTitle}"/>
+                                        <ItemsControl ItemsSource="{Binding Log}" ItemTemplate="{StaticResource MutedLineTemplate}"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
             <!-- ============ CHECKS ============ -->
             <TabItem Style="{StaticResource NavTab}">
                 <TabItem.Header>

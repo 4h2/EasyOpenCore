@@ -299,5 +299,24 @@
   "ssdt.manual.SSDT-RTC0-RANGE": "Use OpenCorePkg's SSDT-RTC0-RANGE after checking the RTC ranges in your DSDT.",
   "ssdt.manual.SSDT-PLUG": "No CPU object was found in ACPI; create SSDT-PLUG manually.",
   "ssdt.manual.SSDT-RHUB": "No USB controller ACPI path was found; create SSDT-RHUB manually.",
-  "ssdt.manual.SSDT-dGPU-Off": "The dGPU has no ACPI path; disable it in the BIOS or create SSDT-dGPU-Off manually."
+  "ssdt.manual.SSDT-dGPU-Off": "The dGPU has no ACPI path; disable it in the BIOS or create SSDT-dGPU-Off manually.",
+
+  "nav.build": "Build EFI",
+  "build.title": "Build EFI",
+  "build.subtitle": "Downloads OpenCore and the kexts, generates the SSDTs and config.plist for the version selected in Compatibility, then validates everything with ocvalidate.",
+  "build.target_label": "TARGET",
+  "build.target": "{0} · {1}",
+  "build.target_hint": "Change the version in the Compatibility tab (EFI plan).",
+  "build.folder_label": "OUTPUT FOLDER",
+  "build.browse": "Browse...",
+  "build.button": "Build EFI",
+  "build.open": "Open folder",
+  "build.kexts": "KEXTS DOWNLOADED",
+  "build.manual": "TO DO MANUALLY",
+  "build.log": "PROGRESS",
+  "build.validation.passed": "config.plist is valid",
+  "build.validation.failed": "ocvalidate found problems",
+  "build.audio.title": "Audio layout-id {0}",
+  "build.audio.detail": "If there is no sound, try these with the alcid=N boot-arg: {0}",
+  "build.done": "EFI ready at {0}. Copy the EFI folder to the EFI partition of a FAT32 USB drive."
 }

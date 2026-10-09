@@ -21,6 +21,9 @@ dotnet run --project src/EasyOpenCore.App
 # CLI: console summary, compatibility matrix and EFI plan
 dotnet run --project src/EasyOpenCore.Cli -- --json report.json --acpi .\acpi --macos 15 --lang en
 
+# CLI: build the EFI for the recommended version (or --macos N)
+dotnet run --project src/EasyOpenCore.Cli -- --build .\out
+
 # Tests
 dotnet test
 ```
@@ -34,9 +37,10 @@ dotnet test
 - [x] Compatibility matrix for every macOS version from High Sierra to Tahoe
 - [x] EFI plan per macOS version: SMBIOS, kexts (in load order), SSDTs, boot-args, iGPU DeviceProperties
 - [x] English / Português (Brasil)
-- [ ] Download OpenCore and kexts, generate `config.plist`, validate with `ocvalidate`
-- [ ] AppleALC layout-id selection
-- [ ] USB mapping
+- [x] EFI builder: downloads OpenCore and kexts from GitHub releases, generates SSDTs (AML) with the real ACPI paths, writes `config.plist` from the release's `Sample.plist`, validates with `ocvalidate`
+- [x] AppleALC layout-id matched to the machine model, AMD Vanilla patches with the core count, macserial serials
+- [ ] USB mapping (UTBMap.kext)
+- [ ] Write the EFI to a USB drive and download the macOS recovery
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design.
 

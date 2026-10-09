@@ -299,5 +299,24 @@
   "ssdt.manual.SSDT-RTC0-RANGE": "Use a SSDT-RTC0-RANGE do OpenCorePkg depois de conferir as faixas do RTC na DSDT.",
   "ssdt.manual.SSDT-PLUG": "Nenhum objeto de CPU encontrado no ACPI; crie a SSDT-PLUG manualmente.",
   "ssdt.manual.SSDT-RHUB": "Nenhum caminho ACPI de controladora USB encontrado; crie a SSDT-RHUB manualmente.",
-  "ssdt.manual.SSDT-dGPU-Off": "A dGPU não tem caminho ACPI; desative-a na BIOS ou crie a SSDT-dGPU-Off manualmente."
+  "ssdt.manual.SSDT-dGPU-Off": "A dGPU não tem caminho ACPI; desative-a na BIOS ou crie a SSDT-dGPU-Off manualmente.",
+
+  "nav.build": "Montar EFI",
+  "build.title": "Montar EFI",
+  "build.subtitle": "Baixa o OpenCore e os kexts, gera as SSDTs e o config.plist para a versão escolhida em Compatibilidade e valida tudo com o ocvalidate.",
+  "build.target_label": "ALVO",
+  "build.target": "{0} · {1}",
+  "build.target_hint": "Troque a versão na aba Compatibilidade (Plano da EFI).",
+  "build.folder_label": "PASTA DE SAÍDA",
+  "build.browse": "Procurar...",
+  "build.button": "Montar EFI",
+  "build.open": "Abrir pasta",
+  "build.kexts": "KEXTS BAIXADOS",
+  "build.manual": "FAZER MANUALMENTE",
+  "build.log": "PROGRESSO",
+  "build.validation.passed": "config.plist válido",
+  "build.validation.failed": "O ocvalidate encontrou problemas",
+  "build.audio.title": "Layout de áudio {0}",
+  "build.audio.detail": "Se não houver som, teste estes com o boot-arg alcid=N: {0}",
+  "build.done": "EFI pronta em {0}. Copie a pasta EFI para a partição EFI de um pendrive FAT32."
 }
