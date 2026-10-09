@@ -37,6 +37,19 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+        <!-- Status lines that should take no space while empty -->
+        <Style x:Key="CollapseWhenEmpty" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Style.Triggers>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!-- Secondary button that sits on a card background -->
+        <Style x:Key="CardButton" TargetType="Button" BasedOn="{StaticResource GhostButton}">
+            <Setter Property="Background" Value="{StaticResource CardHoverBrush}"/>
+            <Setter Property="Padding" Value="10,4"/>
+        </Style>
         <Style x:Key="NavIcon" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource IconFont}"/>
             <Setter Property="Margin" Value="0,2,12,0"/>
@@ -574,6 +587,219 @@
                         </ItemsControl>
                     </StackPanel>
                 </ScrollViewer>
+            </TabItem>
+
+            <!-- ============ POST-INSTALL ============ -->
+            <TabItem Style="{StaticResource NavTab}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE713;" Style="{StaticResource NavIcon}"/>
+                        <TextBlock Text="{l:Tr nav.postinstall}" Style="{StaticResource NavLabel}"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,24" DataContext="{Binding PostInstall}">
+                    <StackPanel>
+                        <TextBlock Text="{l:Tr postinstall.title}" FontSize="24" FontWeight="SemiBold"/>
+                        <TextBlock Text="{l:Tr postinstall.subtitle}" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,16" TextWrapping="Wrap"/>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="{l:Tr postinstall.folder}" Style="{StaticResource SectionTitle}"/>
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                        <Button Style="{StaticResource GhostButton}" Content="{l:Tr postinstall.browse}" Margin="8,0,0,0" Click="OnPostInstallBrowse" IsEnabled="{Binding IsIdle}"/>
+                                        <Button Style="{StaticResource GhostButton}" Content="{l:Tr postinstall.open}" Margin="8,0,0,0" Click="OnPostInstallOpen" IsEnabled="{Binding IsIdle}"/>
+                                        <Button Style="{StaticResource GhostButton}" Content="{l:Tr postinstall.use_last}" Margin="8,0,0,0" Click="OnPostInstallUseLast" IsEnabled="{Binding IsIdle}"/>
+                                    </StackPanel>
+                                    <TextBox Text="{Binding Folder, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"
+                                             AutomationProperties.Name="{l:Tr postinstall.folder}"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding LoadedText}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Visibility="{Binding IsLoaded, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                        <Button Style="{StaticResource GhostButton}" Content="{l:Tr postinstall.discard}" Margin="0,0,8,0" Click="OnPostInstallDiscard" IsEnabled="{Binding CanApply}"/>
+                                        <Button Style="{StaticResource PrimaryButton}" Content="{l:Tr postinstall.apply}" Click="OnPostInstallApply" IsEnabled="{Binding CanApply}"/>
+                                    </StackPanel>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding PendingText}" FontWeight="SemiBold"/>
+                                        <ProgressBar Height="4" Margin="0,6,24,0" IsIndeterminate="True" Visibility="{Binding Busy, Converter={StaticResource BoolToVis}}"/>
+                                    </StackPanel>
+                                </DockPanel>
+                                <TextBlock Text="{Binding Status}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0" Style="{StaticResource CollapseWhenEmpty}"/>
+                                <TextBlock Text="{Binding ValidationText}" FontWeight="SemiBold" Margin="0,6,0,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource CollapseWhenEmpty}">
+                                            <Setter Property="Foreground" Value="{StaticResource BlockerBrush}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ValidationPassed}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource SupportedBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding ValidationOutput}" FontFamily="Cascadia Mono, Consolas" FontSize="11" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" Margin="0,4,0,0"
+                                           Style="{StaticResource CollapseWhenEmpty}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <ItemsControl ItemsSource="{Binding Groups}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,6,0,0">
+                                        <TextBlock Text="{Binding Title}" Style="{StaticResource SectionTitle}"/>
+                                        <Border Style="{StaticResource Card}" Padding="6">
+                                            <ItemsControl ItemsSource="{Binding Items}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border CornerRadius="6" Padding="12,10">
+                                                            <Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Setter Property="Background" Value="Transparent"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Changed}" Value="True">
+                                                                            <Setter Property="Background" Value="#1F4F8CFF"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Border.Style>
+                                                            <DockPanel>
+                                                                <Button DockPanel.Dock="Right" Style="{StaticResource CardButton}" Content="{l:Tr postinstall.guide}"
+                                                                        VerticalAlignment="Top" Click="OnOpenUrl" Tag="{Binding Url}"/>
+                                                                <CheckBox IsChecked="{Binding Wanted}" VerticalAlignment="Top" Margin="0,2,12,0"
+                                                                          AutomationProperties.Name="{Binding Title}">
+                                                                    <CheckBox.IsEnabled>
+                                                                        <MultiBinding Converter="{StaticResource AllTrue}">
+                                                                            <Binding Path="IsAvailable"/>
+                                                                            <Binding Path="DataContext.PostInstall.IsIdle" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                                        </MultiBinding>
+                                                                    </CheckBox.IsEnabled>
+                                                                </CheckBox>
+                                                                <StackPanel Margin="0,0,12,0">
+                                                                    <WrapPanel>
+                                                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                                                                        <TextBlock Text="{l:Tr postinstall.recommended}" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource SupportedBrush}"
+                                                                                   VerticalAlignment="Center" Margin="0,0,10,0" Visibility="{Binding Recommended, Converter={StaticResource BoolToVis}}"/>
+                                                                        <TextBlock Text="{l:Tr postinstall.downloads}" FontSize="11" Foreground="{StaticResource UnknownBrush}"
+                                                                                   VerticalAlignment="Center" Visibility="{Binding Downloads, Converter={StaticResource BoolToVis}}"/>
+                                                                    </WrapPanel>
+                                                                    <TextBlock Text="{Binding Detail}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                                                    <TextBlock Text="{Binding Unavailable}" Foreground="{StaticResource WarningBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,2,0,0"
+                                                                               Visibility="{Binding IsAvailable, Converter={StaticResource InverseBoolToVis}}"/>
+                                                                </StackPanel>
+                                                            </DockPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Border>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ============ TROUBLESHOOTING ============ -->
+            <TabItem Style="{StaticResource NavTab}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE90F;" Style="{StaticResource NavIcon}"/>
+                        <TextBlock Text="{l:Tr nav.trouble}" Style="{StaticResource NavLabel}"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <DockPanel Margin="28,24,0,0" DataContext="{Binding Troubleshooting}">
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,28,10">
+                        <TextBlock Text="{l:Tr trouble.title}" FontSize="24" FontWeight="SemiBold"/>
+                        <TextBlock Text="{l:Tr trouble.subtitle}" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,12" TextWrapping="Wrap"/>
+                        <Grid>
+                            <TextBox x:Name="TroubleSearch" Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"
+                                     AutomationProperties.Name="{l:Tr trouble.search}"/>
+                            <TextBlock Text="{l:Tr trouble.search}" Foreground="{StaticResource UnknownBrush}" Margin="11,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=TroubleSearch}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                        <ListBox Style="{StaticResource ChipList}" ItemsSource="{Binding Stages}" SelectedItem="{Binding SelectedStage}" Margin="0,10,0,0"/>
+                        <DockPanel Margin="0,4,0,0">
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding CountText}" Foreground="{StaticResource MutedBrush}" FontSize="12" VerticalAlignment="Center"/>
+                            <CheckBox IsChecked="{Binding OnlyRelevant}" Content="{l:Tr trouble.only_relevant}"/>
+                        </DockPanel>
+                    </StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,28,24">
+                        <StackPanel>
+                            <TextBlock Text="{l:Tr trouble.none}" Foreground="{StaticResource MutedBrush}" Margin="0,8,0,0"
+                                       Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}"/>
+                            <ItemsControl ItemsSource="{Binding Items}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource Card}" Padding="0" Margin="0,0,0,8">
+                                            <StackPanel>
+                                                <ToggleButton Style="{StaticResource RowToggle}" IsChecked="{Binding IsExpanded}" AutomationProperties.Name="{Binding Title}">
+                                                    <DockPanel>
+                                                        <TextBlock DockPanel.Dock="Right" Text="{Binding StageLabel}" Foreground="{StaticResource MutedBrush}" FontSize="11.5" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                                        <TextBlock DockPanel.Dock="Right" Text="{l:Tr trouble.relevant}" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource WarningBrush}"
+                                                                   VerticalAlignment="Center" Margin="12,0,0,0" Visibility="{Binding Relevant, Converter={StaticResource BoolToVis}}"/>
+                                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                                    </DockPanel>
+                                                </ToggleButton>
+                                                <StackPanel Margin="46,0,18,16" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
+                                                    <TextBlock Text="{l:Tr trouble.cause}" Style="{StaticResource SectionTitle}" Margin="0,0,0,2"/>
+                                                    <TextBlock Text="{Binding Cause}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                                    <TextBlock Text="{l:Tr trouble.fix}" Style="{StaticResource SectionTitle}" Margin="0,0,0,2"/>
+                                                    <TextBlock Text="{Binding Fix}" TextWrapping="Wrap" LineHeight="20"/>
+                                                    <StackPanel Margin="0,10,0,0" Visibility="{Binding HasCommands, Converter={StaticResource BoolToVis}}">
+                                                        <TextBlock Text="{l:Tr trouble.commands}" Style="{StaticResource SectionTitle}" Margin="0,0,0,4"/>
+                                                        <Border Background="{StaticResource BgBrush}" CornerRadius="6" Padding="12,8">
+                                                            <DockPanel>
+                                                                <Button DockPanel.Dock="Right" Style="{StaticResource CardButton}" Content="{l:Tr trouble.copy}"
+                                                                        VerticalAlignment="Top" Click="OnCopyCommands"/>
+                                                                <TextBox Text="{Binding CommandsText, Mode=OneWay}" IsReadOnly="True" BorderThickness="0" Background="Transparent" Padding="0"
+                                                                         FontFamily="Cascadia Mono, Consolas" FontSize="12" TextWrapping="Wrap"/>
+                                                            </DockPanel>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <ItemsControl ItemsSource="{Binding Fixes}" Margin="0,12,0,0">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel/>
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Button Style="{StaticResource PrimaryButton}" Content="{Binding Label}" Margin="0,0,8,8" Click="OnTroubleFix"
+                                                                        Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                        IsEnabled="{Binding DataContext.PostInstall.IsIdle, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                    <WrapPanel>
+                                                        <Button Style="{StaticResource CardButton}" Padding="12,6" Content="{l:Tr trouble.guide}" Click="OnOpenUrl" Tag="{Binding Url}" Margin="0,0,12,0"/>
+                                                        <TextBlock Text="{Binding Message}" Foreground="{StaticResource MutedBrush}" FontSize="12" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                                    </WrapPanel>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
             </TabItem>
 
             <!-- ============ CHECKS ============ -->

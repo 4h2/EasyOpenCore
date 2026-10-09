@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Localization\*.json" LogicalName="EasyOpenCore.Localization.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Localization\*.json" LogicalName="EasyOpenCore.Localization.%(Filename)%(Extension)" WithCulture="false" />
     <EmbeddedResource Include="Data\*.json" LogicalName="EasyOpenCore.Data.%(Filename)%(Extension)" />
   </ItemGroup>
 

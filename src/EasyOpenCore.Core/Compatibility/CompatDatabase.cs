@@ -168,7 +168,7 @@ public sealed class CompatDatabase
         Converters = { new JsonStringEnumConverter() },
     };
 
-    private static T Read<T>(string name)
+    internal static T Read<T>(string name)
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"EasyOpenCore.Data.{name}.json")
                            ?? throw new InvalidOperationException($"Missing embedded data file {name}.json");

@@ -100,6 +100,42 @@ public partial class MainWindow : Window
 
     private async void OnCreateUsb(object sender, RoutedEventArgs e) => await Vm.Installer.CreateAsync(Confirm);
 
+    private void OnPostInstallBrowse(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFolderDialog { Title = Loc.T("postinstall.folder") };
+        if (dialog.ShowDialog(this) == true)
+            Vm.PostInstall.Open(dialog.FolderName);
+    }
+
+    private void OnPostInstallOpen(object sender, RoutedEventArgs e) => Vm.PostInstall.Open(Vm.PostInstall.Folder);
+
+    private void OnPostInstallUseLast(object sender, RoutedEventArgs e) => Vm.PostInstall.UseLastBuilt();
+
+    private void OnPostInstallDiscard(object sender, RoutedEventArgs e) => Vm.PostInstall.Discard();
+
+    private async void OnPostInstallApply(object sender, RoutedEventArgs e) => await Vm.PostInstall.ApplyAsync();
+
+    private async void OnTroubleFix(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { DataContext: TroubleFixViewModel fix, Tag: TroubleViewModel card })
+            card.Message = await Vm.PostInstall.ApplyFixAsync(fix.TweakId, fix.On);
+    }
+
+    private void OnCopyCommands(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { DataContext: TroubleViewModel card })
+        {
+            Clipboard.SetText(card.CommandsText);
+            card.Message = Loc.T("trouble.copied");
+        }
+    }
+
+    private void OnOpenUrl(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: string url } && url.StartsWith("https://", StringComparison.Ordinal))
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+    }
+
     private bool Confirm(string message) =>
         MessageBox.Show(this, message, "EasyOpenCore", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes;
 

@@ -4,6 +4,7 @@ using EasyOpenCore.Core.Compatibility;
 using EasyOpenCore.Core.Efi;
 using EasyOpenCore.Core.Hardware;
 using EasyOpenCore.Core.Localization;
+using EasyOpenCore.Core.PostInstall;
 using EasyOpenCore.Core.Recovery;
 using EasyOpenCore.Core.Usb;
 
@@ -19,6 +20,9 @@ using EasyOpenCore.Core.Usb;
 //   eoc --list-usb            -> list USB disks
 //   eoc --usb-ports           -> show USB ports and record connected ones in the saved USB map
 //       --use-usb-map         -> (with --build) generate UTBMap.kext from the saved USB map
+//   eoc --list-tweaks         -> list the Post-Install tweaks
+//   eoc --efi folder          -> show which tweaks are on in an existing EFI
+//       --tweak id=on,id=off  -> apply tweaks to it (backup + ocvalidate)
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 string? Arg(string name)
@@ -187,4 +191,32 @@ if (args.Contains("--list-usb"))
 {
     foreach (var d in UsbDriveWriter.ListUsbDisks())
         Console.WriteLine($"Disk {d.Number}: {d.Display}");
+}
+
+if (args.Contains("--list-tweaks"))
+{
+    foreach (var t in EfiTweaks.All)
+        Console.WriteLine($"{t.Id,-20} [{t.Group}] {t.Title}{(t.Recommended(report) ? "  (suggested)" : "")}");
+}
+
+if (Arg("--efi") is { } efiFolder)
+{
+    using var github = new GitHubClient();
+    var session = EfiSession.Open(efiFolder, github, report);
+    session.Progress = new Progress<string>(s => Console.Error.WriteLine($"[efi] {s}"));
+    var changes = new List<(EfiTweak, bool)>();
+    foreach (var spec in (Arg("--tweak") ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries))
+    {
+        var parts = spec.Split('=');
+        var tweak = EfiTweaks.Find(parts[0]) ?? throw new ArgumentException($"Unknown tweak {parts[0]} (see --list-tweaks)");
+        changes.Add((tweak, parts.Length < 2 || parts[1] is "on" or "true" or "1"));
+    }
+    if (changes.Count > 0)
+    {
+        var applied = await session.ApplyAsync(changes);
+        Console.WriteLine(Loc.T("postinstall.done", applied.BackupPath));
+        Console.WriteLine(applied.ValidationOutput);
+    }
+    foreach (var t in EfiTweaks.All)
+        Console.WriteLine($"  {(t.IsOn(session) ? "[x]" : "[ ]")} {t.Id}");
 }

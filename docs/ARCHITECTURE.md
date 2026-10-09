@@ -67,15 +67,26 @@ then the newest.
 
 ### 3. Localization (`Core/Localization`)
 
-`Loc` loads `en.json` (primary, fallback) and other languages from embedded JSON. The UI binds
+`Loc` loads `en.json` (primary, fallback) and other languages from embedded JSON, merged with
+topic files named `<topic>.<language>.json` (`help.*.json` holds the troubleshooting and
+post-install texts). The UI binds
 through `{l:Tr key}` and refreshes live on language changes; data-file notes use `@key` references.
 The chosen language is saved to `%AppData%\EasyOpenCore\settings.json`.
 
+### 4. Post-install and troubleshooting (`Core/PostInstall`)
+
+- `EfiSession` opens an existing EFI (the folder that contains `EFI/`, `EFI/` itself or `EFI/OC`),
+  finds the OpenCorePkg release it came from by hashing `OpenCore.efi` against the RELEASE and
+  DEBUG builds (cached or latest), and saves with a timestamped backup in `EasyOpenCore-backups/`
+  next to the EFI, then runs the matching `ocvalidate`.
+- `EfiTweaks` lists every switchable change: `IsOn` reads the current config, `SetAsync` applies or
+  reverts it (boot-args keep `NVRAM → Delete` in sync; drivers come from the same OpenCore build;
+  OpenCanopy resources from OcBinaryData; kexts are added through `KextResolver` and placed with
+  the OC Snapshot ordering while existing `Kernel → Add` entries are kept as they are).
+- `Troubleshooting` loads `Data/troubleshooting.json`: stage, hardware tags, guide anchor, terminal
+  commands and the tweaks that fix each problem. Texts are `ts.<id>.title/cause/fix`.
+
 ## Next steps
 
-1. **EFI builder**: download OpenCorePkg and kexts from GitHub releases (cache + checksum), copy
-   them into `EFI/OC`, generate `config.plist` from the release's `Sample.plist`, apply quirks per
-   platform, compile/copy SSDTs, validate with `ocvalidate.exe`.
-2. **Audio**: pick AppleALC layout-ids from the AppleALC repository data.
-3. **USB mapping** on Windows (USBToolBox approach) generating `UTBMap.kext`.
-4. Keep the database current: entries marked `unknown` need confirmation, especially for Tahoe.
+1. Test the whole flow (USB format, full recovery download, boot) on real hardware.
+2. Keep the database current: entries marked `unknown` need confirmation, especially for Tahoe.

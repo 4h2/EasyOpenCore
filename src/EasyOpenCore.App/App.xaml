@@ -24,6 +24,8 @@
         <conv:SeverityToBrushConverter x:Key="SeverityBrush"/>
         <conv:SeverityToLabelConverter x:Key="SeverityLabel"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+        <conv:AllTrueConverter x:Key="AllTrue"/>
         <conv:LocKeyConverter x:Key="LocKey"/>
         <conv:LevelToBrushConverter x:Key="LevelBrush"/>
         <conv:LevelToGlyphConverter x:Key="LevelGlyph"/>
@@ -171,6 +173,34 @@
                     <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
                 </Trigger>
             </Style.Triggers>
+        </Style>
+
+        <!-- Full-width clickable row with a chevron, used for collapsible cards -->
+        <Style x:Key="RowToggle" TargetType="ToggleButton">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="b" Background="Transparent" CornerRadius="8" Padding="18,12">
+                            <DockPanel>
+                                <TextBlock x:Name="chevron" Text="&#xE76C;" FontFamily="{StaticResource IconFont}" FontSize="11"
+                                           Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Width="28"/>
+                                <ContentPresenter VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{StaticResource CardHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="chevron" Property="Text" Value="&#xE70D;"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style TargetType="CheckBox">

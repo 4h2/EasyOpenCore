@@ -179,7 +179,7 @@ public sealed class EfiBuilder(GitHubClient github)
         return result;
     }
 
-    private static async Task<(bool, string)> ValidateAsync(string ocvalidate, string config, CancellationToken ct)
+    internal static async Task<(bool, string)> ValidateAsync(string ocvalidate, string config, CancellationToken ct)
     {
         var psi = new ProcessStartInfo(ocvalidate, [config])
         {

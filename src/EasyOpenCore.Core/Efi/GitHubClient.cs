@@ -100,8 +100,23 @@ public sealed class GitHubClient : IDisposable
         if (Directory.Exists(temp))
             Directory.Delete(temp, recursive: true);
         ZipFile.ExtractToDirectory(zipPath, temp);
-        Directory.Move(temp, dir);
-        return dir;
+        // Antivirus scanners briefly lock freshly extracted files, which makes the rename fail.
+        for (int attempt = 1; ; attempt++)
+        {
+            try
+            {
+                Directory.Move(temp, dir);
+                return dir;
+            }
+            catch (IOException) when (attempt < 10)
+            {
+                Thread.Sleep(500 * attempt);
+            }
+            catch (UnauthorizedAccessException) when (attempt < 10)
+            {
+                Thread.Sleep(500 * attempt);
+            }
+        }
     }
 
     public void Dispose() => _http.Dispose();

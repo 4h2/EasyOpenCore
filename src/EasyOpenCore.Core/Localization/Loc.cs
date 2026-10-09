@@ -68,12 +68,20 @@ public sealed class Loc : INotifyPropertyChanged
         return _current.TryGetValue(key, out var v) || _fallback.TryGetValue(key, out v) ? v : key;
     }
 
+    /// <summary>Merges "{language}.json" with the topic files "{topic}.{language}.json" (e.g. help.pt-BR.json).</summary>
     private static Dictionary<string, string> Load(string language)
     {
         var asm = Assembly.GetExecutingAssembly();
-        using var stream = asm.GetManifestResourceStream($"EasyOpenCore.Localization.{language}.json");
-        if (stream is null)
-            return [];
-        return JsonSerializer.Deserialize<Dictionary<string, string>>(stream) ?? [];
+        var result = new Dictionary<string, string>();
+        foreach (var name in asm.GetManifestResourceNames()
+                     .Where(n => n.StartsWith("EasyOpenCore.Localization.", StringComparison.Ordinal)
+                                 && n.EndsWith($".{language}.json", StringComparison.Ordinal))
+                     .OrderBy(n => n.Length))
+        {
+            using var stream = asm.GetManifestResourceStream(name)!;
+            foreach (var (k, v) in JsonSerializer.Deserialize<Dictionary<string, string>>(stream) ?? [])
+                result[k] = v;
+        }
+        return result;
     }
 }
