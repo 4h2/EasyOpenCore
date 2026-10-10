@@ -22,6 +22,8 @@ public static class PreflightChecks
         void Add(Severity severity, string area, string key, params object?[] args) =>
             f.Add(new(severity, area, Loc.T($"check.{key}.title", args), Loc.T($"check.{key}.detail", args)));
 
+        if (r.System.BootedThroughOpenCore)
+            Add(Severity.Blocker, "firmware", "opencore_smbios");
         if (r.Cpu.Vendor == CpuVendor.Unknown)
             Add(Severity.Blocker, "cpu", "cpu_vendor");
         if (!r.Cpu.Has("SSE4.2"))

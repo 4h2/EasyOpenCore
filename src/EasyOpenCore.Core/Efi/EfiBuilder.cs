@@ -44,6 +44,8 @@ public sealed class EfiBuilder(GitHubClient github)
         var result = new EfiBuildResult { OutputDirectory = outputDirectory, Smbios = plan.Smbios };
         void Step(string key, params object?[] args) => progress?.Report(Loc.T($"build.step.{key}", args));
 
+        if (hw.System.BootedThroughOpenCore)
+            throw new InvalidOperationException(Loc.T("check.opencore_smbios.detail"));
         var efi = Path.Combine(outputDirectory, "EFI");
         if (Directory.Exists(efi))
             throw new IOException(Loc.T("build.error.exists", efi));

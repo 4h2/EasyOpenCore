@@ -125,6 +125,8 @@
   "checks.title": "Checks",
   "checks.subtitle": "Firmware and hardware prerequisites before building the EFI.",
   "checks.none": "No issues found.",
+  "check.opencore_smbios.title": "Windows was started through OpenCore",
+  "check.opencore_smbios.detail": "The system information shows OpenCore's Mac identity (Acidanthera), not this PC's, so model-specific settings (such as leaving out Reset NVRAM on ThinkPads) would be wrong. Restart and boot Windows directly from the BIOS boot menu, then scan again.",
   "check.cpu_vendor.title": "Unsupported CPU vendor",
   "check.cpu_vendor.detail": "Only Intel and AMD x86-64 CPUs are supported by macOS/OpenCore.",
   "check.no_sse42.title": "CPU without SSE4.2",

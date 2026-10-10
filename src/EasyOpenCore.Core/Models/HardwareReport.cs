@@ -47,6 +47,15 @@ public sealed class SystemInfo
     /// <summary>The guide warns that ThinkPads can be semi-bricked by an NVRAM reset from OpenCore.</summary>
     [System.Text.Json.Serialization.JsonIgnore]
     public bool IsThinkPad => $"{Family} {Model}".Contains("ThinkPad", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Windows was started from OpenCore's picker: the SMBIOS (vendor, model, board, BIOS) is OpenCore's
+    /// Mac identity, not this PC's, so nothing that depends on it can be trusted.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool BootedThroughOpenCore => BiosVendor.Equals("Acidanthera", StringComparison.OrdinalIgnoreCase)
+                                         || Manufacturer.Equals("Acidanthera", StringComparison.OrdinalIgnoreCase);
+
 }
 
 public enum CpuVendor { Unknown, Intel, Amd }

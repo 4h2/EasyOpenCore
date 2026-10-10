@@ -114,6 +114,17 @@ public class PostInstallTests : IDisposable
     }
 
     [Fact]
+    public void Windows_booted_through_opencore_blocks_the_scan()
+    {
+        // What Windows reports when it was started from OpenCore's picker on the ThinkPad.
+        var spoofed = new HardwareReport { System = { Manufacturer = "Acidanthera", Model = "MacBookPro16,3", Family = "1.0", BiosVendor = "Acidanthera" } };
+        Assert.True(spoofed.System.BootedThroughOpenCore);
+        Assert.False(spoofed.System.IsThinkPad);
+        Assert.Contains(Checks.PreflightChecks.Run(spoofed), f => f.Severity == Checks.Severity.Blocker && f.Title == Loc.T("check.opencore_smbios.title"));
+        Assert.False(new HardwareReport { System = { Manufacturer = "LENOVO", BiosVendor = "LENOVO" } }.System.BootedThroughOpenCore);
+    }
+
+    [Fact]
     public void Chime_needs_an_audio_controller_with_layout_id()
     {
         var s = EfiSession.Open(_root, _github);
