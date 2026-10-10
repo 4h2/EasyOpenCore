@@ -58,19 +58,30 @@ public static class UsbDriveWriter
     public static async Task<char> FormatAsync(int diskNumber, CancellationToken ct = default)
     {
         var resultFile = Path.Combine(Path.GetTempPath(), $"eoc-format-{Guid.NewGuid():N}.txt");
+        var errorFile = Path.ChangeExtension(resultFile, ".err");
         var script = Path.Combine(Path.GetTempPath(), $"eoc-format-{Guid.NewGuid():N}.ps1");
         await File.WriteAllTextAsync(script, $$"""
             $ErrorActionPreference = 'Stop'
-            $disk = Get-Disk -Number {{diskNumber}}
-            if ($disk.BusType -ne 'USB' -or $disk.IsBoot -or $disk.IsSystem) { exit 2 }
-            $disk | Set-Disk -IsReadOnly $false -ErrorAction SilentlyContinue
-            $disk | Set-Disk -IsOffline $false -ErrorAction SilentlyContinue
-            Clear-Disk -Number {{diskNumber}} -RemoveData -RemoveOEM -Confirm:$false
-            Initialize-Disk -Number {{diskNumber}} -PartitionStyle GPT
-            $size = [Math]::Min(16GB, (Get-Disk -Number {{diskNumber}}).LargestFreeExtent)
-            $part = New-Partition -DiskNumber {{diskNumber}} -Size $size -AssignDriveLetter
-            Format-Volume -Partition $part -FileSystem FAT32 -NewFileSystemLabel 'OPENCORE' -Confirm:$false | Out-Null
-            (Get-Partition -DiskNumber {{diskNumber}} -PartitionNumber $part.PartitionNumber).DriveLetter | Set-Content -Path '{{resultFile}}'
+            try {
+                $disk = Get-Disk -Number {{diskNumber}}
+                if ($disk.BusType -ne 'USB' -or $disk.IsBoot -or $disk.IsSystem) { exit 2 }
+                $disk | Set-Disk -IsReadOnly $false -ErrorAction SilentlyContinue
+                $disk | Set-Disk -IsOffline $false -ErrorAction SilentlyContinue
+                Clear-Disk -Number {{diskNumber}} -RemoveData -RemoveOEM -Confirm:$false -ErrorAction SilentlyContinue
+                Get-Partition -DiskNumber {{diskNumber}} -ErrorAction SilentlyContinue | Remove-Partition -Confirm:$false
+                # Clear-Disk leaves some drives initialized (GPT or MBR) instead of RAW; Initialize-Disk then fails with 41001.
+                switch ((Get-Disk -Number {{diskNumber}}).PartitionStyle) {
+                    'RAW' { Initialize-Disk -Number {{diskNumber}} -PartitionStyle GPT }
+                    'MBR' { Set-Disk -Number {{diskNumber}} -PartitionStyle GPT }
+                }
+                $size = [Math]::Min(16GB, (Get-Disk -Number {{diskNumber}}).LargestFreeExtent)
+                $part = New-Partition -DiskNumber {{diskNumber}} -Size $size -AssignDriveLetter
+                Format-Volume -Partition $part -FileSystem FAT32 -NewFileSystemLabel 'OPENCORE' -Confirm:$false | Out-Null
+                (Get-Partition -DiskNumber {{diskNumber}} -PartitionNumber $part.PartitionNumber).DriveLetter | Set-Content -Path '{{resultFile}}'
+            } catch {
+                $_.Exception.Message | Set-Content -Path '{{errorFile}}'
+                exit 1
+            }
             """, ct);
 
         try
@@ -85,6 +96,8 @@ public static class UsbDriveWriter
 
             if (process.ExitCode == 2)
                 throw new InvalidOperationException("The selected disk is not a removable USB disk.");
+            if (File.Exists(errorFile))
+                throw new InvalidOperationException($"Formatting failed: {(await File.ReadAllTextAsync(errorFile, ct)).Trim()}");
             if (process.ExitCode != 0 || !File.Exists(resultFile))
                 throw new InvalidOperationException($"Formatting failed (exit code {process.ExitCode}).");
             var letter = (await File.ReadAllTextAsync(resultFile, ct)).Trim();
@@ -94,6 +107,7 @@ public static class UsbDriveWriter
         {
             File.Delete(script);
             File.Delete(resultFile);
+            File.Delete(errorFile);
         }
     }
 
