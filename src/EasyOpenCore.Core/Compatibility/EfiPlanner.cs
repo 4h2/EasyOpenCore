@@ -99,6 +99,9 @@ public static class EfiPlanner
             Add("SMCBatteryManager", Loc.T("plan.kext.battery"));
             Add("ECEnabler", Loc.T("plan.kext.ecenabler"));
             Add("BrightnessKeys", Loc.T("plan.kext.brightness"));
+            // ChefKiss guide (Kexts → Extras): ForgedInvariant syncs the TSC, "necessary for laptops".
+            if (hw.Cpu.Vendor == CpuVendor.Amd)
+                Add("ForgedInvariant", Loc.T("plan.kext.forgedinvariant"));
         }
 
         foreach (var k in cpuRule?.Kexts.Where(Applies) ?? [])
@@ -118,6 +121,13 @@ public static class EfiPlanner
         if (hw.Cpu.Vendor == CpuVendor.Amd && plan.Smbios is "MacPro6,1" or "MacPro7,1" or "iMacPro1,1"
             && db.IndexOf(plan.Version.Id) >= db.IndexOf("12"))
             Add("AppleMCEReporterDisabler", Loc.T("plan.kext.mce"));
+
+        // NootedRed conflicts with WhateverGreen (NootedRed prerequisites: "Remove WhateverGreen.kext").
+        if (picked.ContainsKey("NootedRed"))
+        {
+            picked.Remove("WhateverGreen");
+            plan.Warnings.Add(Loc.T("plan.warn.nootedred_vram"));
+        }
 
         Add("USBToolBox", Loc.T("plan.kext.usbtoolbox"));
         Add("UTBMap", Loc.T("plan.kext.utbmap"));
@@ -160,11 +170,12 @@ public static class EfiPlanner
         if (hw.Cpu.Vendor == CpuVendor.Amd && !laptop && Regex.IsMatch(board, "B550|A520", RegexOptions.IgnoreCase))
             plan.Ssdts.Add(new("SSDT-CPUR", Loc.T("plan.ssdt.cpur", board)));
 
-        if (hw.Input.Any(i => i.Bus == InputBus.I2c))
-        {
+        bool i2c = hw.Input.Any(i => i.Bus == InputBus.I2c);
+        if (i2c)
             plan.Ssdts.Add(new("SSDT-GPIO", Loc.T("plan.ssdt.gpio")));
-            plan.Ssdts.Add(new("SSDT-XOSI", Loc.T("plan.ssdt.xosi")));
-        }
+        // ChefKiss guide (ACPI): AMD laptops must also choose FakeEC Laptop and XOSI.
+        if (i2c || (laptop && hw.Cpu.Vendor == CpuVendor.Amd))
+            plan.Ssdts.Add(new("SSDT-XOSI", Loc.T(i2c ? "plan.ssdt.xosi" : "plan.ssdt.xosi_amd")));
 
         if (laptop && compat.Components.Any(c => c.Gpu?.Kind == GpuKind.Discrete && c.Cells[plan.Version.Id].Level < SupportLevel.Limited))
             plan.Ssdts.Add(new("SSDT-dGPU-Off", Loc.T("plan.ssdt.dgpu_off")));

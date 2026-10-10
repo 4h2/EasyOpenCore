@@ -161,7 +161,7 @@
       { "from": "10.13", "to": "15", "level": "supported", "note": "@note.amd_vanilla" },
       { "from": "26", "to": "26", "level": "unknown", "note": "@note.amd_vanilla_new" }
     ],
-    "smbios": { "desktop": ["iMacPro1,1", "MacPro7,1"], "laptop": ["MacBookPro16,3", "MacBookPro16,2"] },
+    "smbios": { "desktop": ["iMacPro1,1", "MacPro7,1"], "laptop": ["MacBookPro16,2"] },
     "ssdts": { "desktop": ["SSDT-EC-USBX"], "laptop": ["SSDT-EC-USBX", "SSDT-PNLF"] },
     "kexts": [
       { "name": "AMDRyzenCPUPowerManagement" },

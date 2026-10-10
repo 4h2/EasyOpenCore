@@ -282,6 +282,9 @@
   "plan.bootarg.wegnoegpu": "Disables the unsupported {0}.",
   "plan.bootarg.for": "For {0}.",
 
+  "plan.kext.forgedinvariant": "Synchronizes the TSC across cores (ChefKiss guide: necessary for laptops).",
+  "plan.ssdt.xosi_amd": "Makes the firmware behave as it does for Windows (ChefKiss guide: required on AMD laptops).",
+  "plan.warn.nootedred_vram": "NootedRed: WhateverGreen was left out (they conflict). Set the iGPU memory (UMA frame buffer) to at least 512 MB in the BIOS, 1 GB or more for proper functionality.",
   "plan.kext.mce": "Stops AppleMCEReporter from panicking on AMD with this SMBIOS.",
   "build.step.opencore": "Downloading OpenCore",
   "build.step.kext": "Downloading {0}",

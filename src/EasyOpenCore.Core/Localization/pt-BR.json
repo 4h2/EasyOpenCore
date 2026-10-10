@@ -282,6 +282,9 @@
   "plan.bootarg.wegnoegpu": "Desativa a {0} sem suporte.",
   "plan.bootarg.for": "Para {0}.",
 
+  "plan.kext.forgedinvariant": "Sincroniza o TSC entre os núcleos (guia da ChefKiss: necessário em notebooks).",
+  "plan.ssdt.xosi_amd": "Faz o firmware se comportar como faz no Windows (guia da ChefKiss: obrigatório em notebooks AMD).",
+  "plan.warn.nootedred_vram": "NootedRed: o WhateverGreen ficou de fora (eles conflitam). Ajuste a memória da iGPU (UMA frame buffer) na BIOS para pelo menos 512 MB, 1 GB ou mais para funcionar direito.",
   "plan.kext.mce": "Impede o kernel panic do AppleMCEReporter em AMD com este SMBIOS.",
   "build.step.opencore": "Baixando o OpenCore",
   "build.step.kext": "Baixando {0}",

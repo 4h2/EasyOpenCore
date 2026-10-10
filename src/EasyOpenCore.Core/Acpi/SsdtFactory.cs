@@ -199,6 +199,17 @@ public static class SsdtFactory
             "Skylake" or "Kaby Lake" => 16,
             _ => 19, // Coffee Lake and newer (and AMD with NootedRed)
         };
+        var device = new AmlIf(Darwin(),
+        [
+            new AmlDevice("PNLF",
+                new AmlName("_HID", new AmlEisaId("APP0002")),
+                new AmlName("_CID", new AmlString("backlight")),
+                new AmlName("_UID", new AmlInt(uid)),
+                new AmlName("_STA", new AmlInt(0x0B))),
+        ]);
+        // AMD: same layout as the SSDT-PNLF.aml linked from the NootedRed page (device at the root scope).
+        if (cpu.Vendor == CpuVendor.Amd)
+            return Make("SSDT-PNLF", new AmlTable("AMDPNLF", device), comment);
         return Make("SSDT-PNLF", new AmlTable("PNLF",
             new AmlScope(@"\_SB",
                 new AmlIf(Darwin(),

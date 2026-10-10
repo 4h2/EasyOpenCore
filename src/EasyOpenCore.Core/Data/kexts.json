@@ -11,6 +11,7 @@
   { "name": "CryptexFixup",                "repo": "acidanthera/CryptexFixup",              "order": 32 },
   { "name": "CpuTopologyRebuild",          "repo": "b00t0x/CpuTopologyRebuild",             "order": 33 },
   { "name": "CpuTscSync",                  "repo": "acidanthera/CpuTscSync",                "order": 34 },
+  { "name": "ForgedInvariant",             "repo": "ChefKissInc/ForgedInvariant",           "order": 34 },
   { "name": "AMDRyzenCPUPowerManagement",  "repo": "trulyspinach/SMCAMDProcessor",          "order": 40 },
   { "name": "SMCAMDProcessor",             "repo": "trulyspinach/SMCAMDProcessor",          "order": 41 },
   { "name": "AppleMCEReporterDisabler",    "repo": "",                                      "order": 42 },

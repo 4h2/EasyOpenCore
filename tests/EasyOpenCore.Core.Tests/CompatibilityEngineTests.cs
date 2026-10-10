@@ -108,6 +108,23 @@ public class CompatibilityEngineTests
     }
 
     [Fact]
+    public void AmdApuLaptop_FollowsNootedRedPrerequisites()
+    {
+        var hw = Desktop("Zen 2", CpuVendor.Amd, Gpu("1002", "164C", GpuKind.Integrated));
+        hw.System.Chassis = ChassisKind.Laptop;
+        hw.Cpu.Name = "AMD Ryzen 5 5500U with Radeon Graphics";
+
+        var plan = EfiPlanner.Plan(hw, CompatibilityEngine.Evaluate(hw), "15");
+
+        Assert.Equal("MacBookPro16,2", plan.Smbios);
+        Assert.Contains(plan.Kexts, k => k.Name == "NootedRed");
+        Assert.DoesNotContain(plan.Kexts, k => k.Name == "WhateverGreen");
+        Assert.Contains(plan.Kexts, k => k.Name == "ForgedInvariant");
+        Assert.Contains(plan.Ssdts, s => s.Name == "SSDT-XOSI");
+        Assert.Contains(plan.Warnings, w => w.Contains("512"));
+    }
+
+    [Fact]
     public void CpuWithoutAvx2_GetsCryptexFixupOnVentura()
     {
         var hw = Desktop("Ivy Bridge", CpuVendor.Intel, Gpu("1002", "67DF", GpuKind.Discrete));
