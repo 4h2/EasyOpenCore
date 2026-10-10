@@ -23,6 +23,8 @@ public sealed class ConfigInputs
     public List<PNode> KernelPatches { get; init; } = [];
     /// <summary>Apple Secure Boot must be off for OCLP root patches and for macOS older than Catalina.</summary>
     public bool DisableAppleSecureBoot { get; init; }
+    /// <summary>OpenCore DEBUG build: also log to a file on the EFI partition.</summary>
+    public bool DebugLog { get; init; }
 }
 
 /// <summary>
@@ -180,6 +182,12 @@ public static class ConfigBuilder
         debug["AppleDebug"] = P.Bool(true);
         debug["ApplePanic"] = P.Bool(true);
         debug["DisableWatchDog"] = P.Bool(true);
+        if (input.DebugLog)
+        {
+            // Dortania "OpenCore Debugging": Target 67 (logging + console + file), DisplayLevel 2147483714.
+            debug["Target"] = P.Int(67);
+            debug["DisplayLevel"] = P.Int(2147483714);
+        }
 
         var security = misc.Dict("Security");
         security["AllowSetDefault"] = P.Bool(true);

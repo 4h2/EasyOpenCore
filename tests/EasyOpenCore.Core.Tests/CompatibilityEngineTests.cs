@@ -124,6 +124,43 @@ public class CompatibilityEngineTests
         Assert.Contains(plan.Warnings, w => w.Contains("512"));
     }
 
+    /// <summary>Full build of a ThinkPad with a Ryzen APU as a DEBUG build. Opt-in (EOC_NETWORK_TESTS=1): downloads OpenCore and kexts.</summary>
+    [Fact]
+    public async Task DebugBuild_UsesDebugPackageAndLogsToFile()
+    {
+        if (Environment.GetEnvironmentVariable("EOC_NETWORK_TESTS") != "1")
+            return;
+
+        var hw = Desktop("Zen 2", CpuVendor.Amd, Gpu("1002", "164C", GpuKind.Integrated, "PciRoot(0x0)/Pci(0x8,0x1)/Pci(0x0,0x0)"));
+        hw.System = new SystemInfo { Chassis = ChassisKind.Laptop, Manufacturer = "LENOVO", Model = "20YD001CBO", Family = "ThinkPad E14 Gen 3", BiosVendor = "LENOVO" };
+        hw.Cpu.Name = "AMD Ryzen 5 5500U with Radeon Graphics";
+        hw.Cpu.Family = 0x17;
+        hw.Cpu.Cores = 6;
+        hw.Cpu.Threads = 12;
+        var output = Path.Combine(Path.GetTempPath(), "eoc-debugbuild-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var github = new Efi.GitHubClient();
+            var result = await new Efi.EfiBuilder(github).BuildAsync(hw, CompatibilityEngine.Evaluate(hw), "15", output, debugBuild: true);
+
+            Assert.True(result.ValidationPassed, result.ValidationOutput);
+            Assert.EndsWith("DEBUG", result.OpenCoreVersion);
+            var config = (Plist.PDict)Plist.PlistSerializer.Load(Path.Combine(output, "EFI", "OC", "config.plist"));
+            var debug = config.Dict("Misc").Dict("Debug");
+            Assert.Equal(67, ((Plist.PInteger)debug["Target"]).Value);
+            Assert.True(((Plist.PBool)debug["ApplePanic"]).Value);
+            Assert.False(File.Exists(Path.Combine(output, "EFI", "OC", "Drivers", "ResetNvramEntry.efi")));
+            var session = PostInstall.EfiSession.Open(output, github, hw);
+            Assert.True(PostInstall.EfiTweaks.Find("debug_log")!.IsOn(session));
+            Assert.True((await session.PackageAsync()).EfiIsDebug);
+        }
+        finally
+        {
+            if (Directory.Exists(output))
+                Directory.Delete(output, recursive: true);
+        }
+    }
+
     [Fact]
     public void CpuWithoutAvx2_GetsCryptexFixupOnVentura()
     {

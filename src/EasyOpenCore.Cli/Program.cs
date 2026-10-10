@@ -20,6 +20,7 @@ using EasyOpenCore.Core.Usb;
 //   eoc --list-usb            -> list USB disks
 //   eoc --usb-ports           -> show USB ports and record connected ones in the saved USB map
 //       --use-usb-map         -> (with --build) generate UTBMap.kext from the saved USB map
+//       --debug               -> (with --build) OpenCore DEBUG build with file logging
 //   eoc --list-tweaks         -> list the Post-Install tweaks
 //   eoc --efi folder          -> show which tweaks are on in an existing EFI
 //       --tweak id=on,id=off  -> apply tweaks to it (backup + ocvalidate)
@@ -137,7 +138,8 @@ if (Arg("--build") is { } buildDir && target is not null)
 {
     using var github = new GitHubClient();
     var result = await new EfiBuilder(github).BuildAsync(report, compat, target, Path.GetFullPath(buildDir),
-        new Progress<string>(s => Console.Error.WriteLine($"[build] {s}")), usbMap: args.Contains("--use-usb-map") ? UsbMap.Load() : null);
+        new Progress<string>(s => Console.Error.WriteLine($"[build] {s}")), usbMap: args.Contains("--use-usb-map") ? UsbMap.Load() : null,
+        debugBuild: args.Contains("--debug"));
 
     Console.WriteLine($"\n== EFI built in {result.OutputDirectory} (OpenCore {result.OpenCoreVersion}) ==");
     foreach (var k in result.Kexts) Console.WriteLine($"  {k.Name,-28} {k.Version,-10} {k.Source}");

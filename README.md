@@ -37,7 +37,7 @@ dotnet test
 - [x] Compatibility matrix for every macOS version from High Sierra to Tahoe
 - [x] EFI plan per macOS version: SMBIOS, kexts (in load order), SSDTs, boot-args, iGPU DeviceProperties
 - [x] English / Português (Brasil)
-- [x] EFI builder: downloads OpenCore and kexts from GitHub releases, generates SSDTs (AML) with the real ACPI paths, writes `config.plist` from the release's `Sample.plist`, validates with `ocvalidate`
+- [x] EFI builder: downloads OpenCore and kexts from GitHub releases, generates SSDTs (AML) with the real ACPI paths, writes `config.plist` from the release's `Sample.plist`, validates with `ocvalidate`; optional OpenCore DEBUG build that logs every boot and saves kernel panics to the USB drive
 - [x] AppleALC layout-id matched to the machine model, AMD Vanilla patches with the core count, macserial serials
 - [x] USB mapping: live port discovery through the Windows USB hub IOCTLs, USBToolBox-compatible UTBMap.kext
 - [x] USB installer: copy EFI to a FAT32 drive (optional elevated format), download the macOS recovery from Apple with chunklist signature verification

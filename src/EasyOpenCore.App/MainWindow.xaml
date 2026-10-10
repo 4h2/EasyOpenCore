@@ -384,6 +384,12 @@
                                     <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="{l:Tr build.browse}" Margin="8,0,0,0" Click="OnBrowseOutput"/>
                                     <TextBox Text="{Binding OutputFolder, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
                                 </DockPanel>
+                                <CheckBox IsChecked="{Binding DebugBuild}" Margin="0,14,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="{l:Tr build.debug}"/>
+                                        <TextBlock Text="{l:Tr build.debug_hint}" Foreground="{StaticResource MutedBrush}" FontSize="11.5" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </CheckBox>
 
                                 <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                                     <Button Style="{StaticResource PrimaryButton}" Content="{l:Tr build.button}" Click="OnBuild" IsEnabled="{Binding CanBuild}"/>

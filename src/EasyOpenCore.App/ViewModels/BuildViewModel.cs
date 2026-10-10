@@ -52,6 +52,8 @@ public sealed class BuildViewModel : INotifyPropertyChanged
         set { _outputFolder = value; OnPropertyChanged(); }
     }
 
+    public bool DebugBuild { get; set; }
+
     public bool IsBuilding
     {
         get => _isBuilding;
@@ -117,7 +119,7 @@ public sealed class BuildViewModel : INotifyPropertyChanged
             using var github = new GitHubClient();
             var progress = new Progress<string>(s => Log.Add(s));
             var result = await new EfiBuilder(github).BuildAsync(_hardware!, _compat.Report, _compat.SelectedVersion, OutputFolder, progress,
-                usbMap: Core.Usb.UsbMap.Load());
+                usbMap: Core.Usb.UsbMap.Load(), debugBuild: DebugBuild);
 
             foreach (var k in result.Kexts)
                 Kexts.Add(new BuildLine($"{k.Name} {k.Version}", k.Source));

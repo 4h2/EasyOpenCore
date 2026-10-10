@@ -37,7 +37,8 @@ public sealed class EfiBuilder(GitHubClient github)
     private const string KextGuideUrl = "https://dortania.github.io/OpenCore-Install-Guide/ktext.html";
 
     public async Task<EfiBuildResult> BuildAsync(HardwareReport hw, CompatibilityReport compat, string macosVersion,
-        string outputDirectory, IProgress<string>? progress = null, CancellationToken ct = default, Usb.UsbMap? usbMap = null)
+        string outputDirectory, IProgress<string>? progress = null, CancellationToken ct = default, Usb.UsbMap? usbMap = null,
+        bool debugBuild = false)
     {
         var db = CompatDatabase.Instance;
         var plan = EfiPlanner.Plan(hw, compat, macosVersion);
@@ -54,9 +55,11 @@ public sealed class EfiBuilder(GitHubClient github)
         // 1. OpenCore
         Step("opencore");
         var release = await github.GetLatestReleaseAsync(OpenCoreRepo, ct);
-        var asset = release.Assets.First(a => a.Name.EndsWith("-RELEASE.zip", StringComparison.OrdinalIgnoreCase));
+        // DEBUG build + file logging: Dortania's "OpenCore Debugging" setup, for when the first boots fail.
+        var flavour = debugBuild ? "DEBUG" : "RELEASE";
+        var asset = release.Assets.First(a => a.Name.EndsWith($"-{flavour}.zip", StringComparison.OrdinalIgnoreCase));
         var ocPkg = github.Extract(await github.DownloadAsync(asset.Url, $"{OpenCoreRepo.Replace('/', '_')}/{release.TagName}", ct));
-        result.OpenCoreVersion = release.TagName;
+        result.OpenCoreVersion = debugBuild ? $"{release.TagName} DEBUG" : release.TagName;
 
         CopyDirectory(Path.Combine(ocPkg, "X64", "EFI", "BOOT"), Path.Combine(efi, "BOOT"));
         foreach (var dir in new[] { "ACPI", "Drivers", "Kexts", "Tools", "Resources" })
@@ -160,6 +163,7 @@ public sealed class EfiBuilder(GitHubClient github)
         var sample = PlistSerializer.Load(Path.Combine(ocPkg, "Docs", "Sample.plist")).AsDict;
         var config = ConfigBuilder.Build(sample, hw, compat, new ConfigInputs
         {
+            DebugLog = debugBuild,
             Plan = plan,
             Ssdts = ssdts,
             Kexts = snapshot,
@@ -181,6 +185,8 @@ public sealed class EfiBuilder(GitHubClient github)
             await ValidateAsync(Path.Combine(ocPkg, "Utilities", "ocvalidate", "ocvalidate.exe"), configPath, ct);
 
         result.Notes.AddRange(plan.Warnings);
+        if (debugBuild)
+            result.Notes.Add(Loc.T("build.note.debug"));
         if (hw.System.IsThinkPad)
             result.Notes.Add(Loc.T("build.note.thinkpad_nvram"));
         await File.WriteAllTextAsync(Path.Combine(outputDirectory, "EasyOpenCore-summary.txt"), Summary(result, plan), ct);
