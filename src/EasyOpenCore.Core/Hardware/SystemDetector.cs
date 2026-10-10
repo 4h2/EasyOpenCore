@@ -19,6 +19,9 @@ public static class SystemDetector
                 info.Chassis = ChassisKind.Laptop;
         }
 
+        foreach (var p in Wmi.Query("SELECT Version FROM Win32_ComputerSystemProduct"))
+            info.Family = Wmi.Str(p, "Version");
+
         foreach (var enc in Wmi.Query("SELECT ChassisTypes FROM Win32_SystemEnclosure"))
         {
             if (Wmi.Get(enc, "ChassisTypes") is ushort[] { Length: > 0 } types && info.Chassis == ChassisKind.Unknown)

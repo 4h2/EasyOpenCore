@@ -37,6 +37,8 @@ public static class PreflightChecks
             Add(Severity.Warning, "firmware", "legacy_bios");
         if (r.System.SecureBootEnabled == true)
             Add(Severity.Warning, "firmware", "secure_boot");
+        if (r.System.IsThinkPad)
+            Add(Severity.Warning, "firmware", "thinkpad_nvram");
 
         foreach (var c in r.StorageControllers.Where(c => c.ClassCode.StartsWith("0104")))
             Add(Severity.Blocker, DeviceCategory.Storage, "raid", c.Name);

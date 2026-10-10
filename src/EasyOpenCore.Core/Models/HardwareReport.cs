@@ -30,6 +30,8 @@ public sealed class SystemInfo
 {
     public string Manufacturer { get; set; } = "";
     public string Model { get; set; } = "";
+    /// <summary>Marketing name (Win32_ComputerSystemProduct.Version), e.g. "ThinkPad E14 Gen 3"; Lenovo's Model is only the machine type.</summary>
+    public string Family { get; set; } = "";
     public ChassisKind Chassis { get; set; }
     public string BoardManufacturer { get; set; } = "";
     public string BoardProduct { get; set; } = "";
@@ -41,6 +43,10 @@ public sealed class SystemInfo
     public string OsName { get; set; } = "";
     public string OsBuild { get; set; } = "";
     public ulong TotalMemoryBytes { get; set; }
+
+    /// <summary>The guide warns that ThinkPads can be semi-bricked by an NVRAM reset from OpenCore.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool IsThinkPad => $"{Family} {Model}".Contains("ThinkPad", StringComparison.OrdinalIgnoreCase);
 }
 
 public enum CpuVendor { Unknown, Intel, Amd }

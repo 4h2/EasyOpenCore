@@ -61,7 +61,11 @@ public sealed class EfiBuilder(GitHubClient github)
             Directory.CreateDirectory(Path.Combine(oc, dir));
         File.Copy(Path.Combine(ocPkg, "X64", "EFI", "OC", "OpenCore.efi"), Path.Combine(oc, "OpenCore.efi"));
 
-        var drivers = new List<string> { "OpenRuntime.efi", "ResetNvramEntry.efi" };
+        // ResetNvramEntry adds the picker's "Reset NVRAM" entry (and the Cmd+Opt+P+R hotkey). Left out on
+        // ThinkPads: the guide warns they are known to be semi-bricked by an NVRAM reset in OpenCore.
+        var drivers = new List<string> { "OpenRuntime.efi" };
+        if (!hw.System.IsThinkPad)
+            drivers.Add("ResetNvramEntry.efi");
         foreach (var d in drivers)
             File.Copy(Path.Combine(ocPkg, "X64", "EFI", "OC", "Drivers", d), Path.Combine(oc, "Drivers", d));
         try
@@ -175,6 +179,8 @@ public sealed class EfiBuilder(GitHubClient github)
             await ValidateAsync(Path.Combine(ocPkg, "Utilities", "ocvalidate", "ocvalidate.exe"), configPath, ct);
 
         result.Notes.AddRange(plan.Warnings);
+        if (hw.System.IsThinkPad)
+            result.Notes.Add(Loc.T("build.note.thinkpad_nvram"));
         await File.WriteAllTextAsync(Path.Combine(outputDirectory, "EasyOpenCore-summary.txt"), Summary(result, plan), ct);
         return result;
     }

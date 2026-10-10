@@ -89,6 +89,31 @@ public class PostInstallTests : IDisposable
     }
 
     [Fact]
+    public async Task ThinkPads_keep_the_reset_nvram_entry_removed()
+    {
+        var thinkpad = new HardwareReport { System = { Manufacturer = "LENOVO", Model = "20YD001CBO", Family = "ThinkPad E14 Gen 3" } };
+        Assert.True(thinkpad.System.IsThinkPad);
+        Assert.False(new HardwareReport { System = { Manufacturer = "LENOVO", Family = "IdeaPad 5 14ALC05" } }.System.IsThinkPad);
+        Assert.Contains(Checks.PreflightChecks.Run(thinkpad), f => f.Title == Loc.T("check.thinkpad_nvram.title"));
+
+        var s = EfiSession.Open(_root, _github, thinkpad);
+        s.Drivers.Items.Add(P.Dict(("Comment", P.Str("")), ("Enabled", P.Bool(true)), ("Path", P.Str("ResetNvramEntry.efi"))));
+        Directory.CreateDirectory(Path.Combine(s.OcDir, "Drivers"));
+        File.WriteAllText(Path.Combine(s.OcDir, "Drivers", "ResetNvramEntry.efi"), "");
+
+        var t = EfiTweaks.Find("no_nvram_reset")!;
+        Assert.True(t.Recommended(thinkpad));
+        Assert.False(t.IsOn(s));
+        Assert.Null(t.Unavailable(s));
+
+        await t.SetAsync(s, true, default);
+        Assert.True(t.IsOn(s));
+        Assert.False(File.Exists(Path.Combine(s.OcDir, "Drivers", "ResetNvramEntry.efi")));
+        Assert.NotNull(t.Unavailable(s));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => t.SetAsync(s, false, default));
+    }
+
+    [Fact]
     public void Chime_needs_an_audio_controller_with_layout_id()
     {
         var s = EfiSession.Open(_root, _github);

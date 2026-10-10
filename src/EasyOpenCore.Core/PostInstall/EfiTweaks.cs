@@ -38,6 +38,7 @@ public static class EfiTweaks
     private const string Extended = Install + "troubleshooting/extended/";
     /// <summary>0x10F0103: file system + device lock, APFS/HFS on SATA, SAS, SCSI, NVMe and PCI devices.</summary>
     private const long ScanPolicySecure = 17760515;
+    private const string ResetNvramDriver = "ResetNvramEntry.efi";
 
     public static IReadOnlyList<EfiTweak> All { get; } = Create();
 
@@ -222,6 +223,23 @@ public static class EfiTweaks
                 s.AppleNvram["csr-active-config"] = P.Data(on ? [0x03, 0, 0, 0] : [0, 0, 0, 0]);
                 s.EnsureNvramDeleted(EfiSession.AppleNvramGuid, "csr-active-config");
                 return Task.CompletedTask;
+            },
+        },
+        new()
+        {
+            // On = the picker has no "Reset NVRAM" entry (ResetNvramEntry.efi not loaded).
+            Id = "no_nvram_reset", Group = TweakGroup.Security, Url = Extended + "userspace-issues.html#macos-installer-in-russian",
+            Recommended = hw => hw.System.IsThinkPad,
+            Unavailable = s => s.Hardware?.System.IsThinkPad == true && !s.HasDriver(ResetNvramDriver) ? "tweak.no_nvram_reset.thinkpad" : null,
+            IsOn = s => !s.HasDriver(ResetNvramDriver),
+            SetAsync = async (s, on, ct) =>
+            {
+                if (on)
+                    s.RemoveDriver(ResetNvramDriver);
+                else if (s.Hardware?.System.IsThinkPad == true)
+                    throw new InvalidOperationException(Loc.T("tweak.no_nvram_reset.thinkpad"));
+                else
+                    await s.AddDriverAsync(ResetNvramDriver, ct);
             },
         },
 
